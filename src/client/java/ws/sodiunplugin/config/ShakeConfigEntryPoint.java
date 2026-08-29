@@ -1,5 +1,7 @@
 package ws.sodiunplugin.config;
 
+import java.util.Set;
+
 import net.caffeinemc.mods.sodium.api.config.ConfigEntryPoint;
 import net.caffeinemc.mods.sodium.api.config.StorageEventHandler;
 import net.caffeinemc.mods.sodium.api.config.option.ControlValueFormatter;
@@ -8,33 +10,28 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import ws.sodiunplugin.feature.HighlightColor;
+import ws.sodiunplugin.feature.PlayerHighlightConfig;
 import ws.sodiunplugin.hitreplay.HitReplayConfig;
 import ws.sodiunplugin.hitreplay.ReplayLogScreen;
 
-/**
- * 通过 Sodium 的 "sodium:config_api_user" 入口点，在 Sodium 视频设置界面中
- * 单独注册一页（即左侧页面列表中本模组专属的一列），集中放置视角抖动相关设置，
- * 并额外注册"受击回放"页（记录玩家受到的伤害并查看历史）。
- */
+
 public class ShakeConfigEntryPoint implements ConfigEntryPoint {
 
     private static final String MOD_ID = "sodium_plugin";
 
-    // 在设置被修改并应用后统一刷新（保存到磁盘）。每次选项变更都会调用一次。
     private static final StorageEventHandler STORAGE = () -> {
         ShakeConfig.save();
         HitReplayConfig.save();
+        PlayerHighlightConfig.save();
     };
 
-    // 整数滑块显示百分比，例如 "50%"。
     private static final ControlValueFormatter PERCENT_FORMATTER = value -> Text.literal(value + "%");
 
-    // 整数滑块直接显示数值。
     private static final ControlValueFormatter PLAIN_FORMATTER = value -> Text.literal(String.valueOf(value));
 
     @Override
     public void registerConfigEarly(ConfigBuilder builder) {
-        // 早期注册不需要，选项仅在游戏启动后显示即可。
     }
 
     @Override
@@ -43,7 +40,6 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
                 .setName("Sodium View Shake Control")
                 .setIcon(Identifier.of(MOD_ID, "textures/gui/config-icon.png"));
 
-        // 第一页：视角抖动控制（原有全部选项）
         modOptions.addPage(
                 builder.createOptionPage()
                         .setName(Text.translatable("sodium_plugin.page.title"))
@@ -155,6 +151,46 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
                         )
                         .addOptionGroup(
                                 builder.createOptionGroup()
+                                        .setName(Text.translatable("sodium_plugin.group.highlight"))
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "highlight_players"))
+                                                        .setName(Text.translatable("sodium_plugin.option.highlight_players"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.highlight_players.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(false)
+                                                        .setBinding(
+                                                                value -> PlayerHighlightConfig.setEnabled(value),
+                                                                PlayerHighlightConfig::getEnabled)
+                                        )
+                                        .addOption(
+                                                builder.createIntegerOption(Identifier.of(MOD_ID, "highlight_range"))
+                                                        .setName(Text.translatable("sodium_plugin.option.highlight_range"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.highlight_range.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setRange(8, 128, 1)
+                                                        .setDefaultValue(64)
+                                                        .setValueFormatter(PLAIN_FORMATTER)
+                                                        .setBinding(
+                                                                value -> PlayerHighlightConfig.setRange(value),
+                                                                PlayerHighlightConfig::getRange)
+                                        )
+                                        .addOption(
+                                                builder.createEnumOption(Identifier.of(MOD_ID, "highlight_color"), HighlightColor.class)
+                                                        .setName(Text.translatable("sodium_plugin.option.highlight_color"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.highlight_color.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setAllowedValues(Set.of(HighlightColor.values()))
+                                                        .setElementNameProvider(
+                                                                color -> Text.translatable(
+                                                                        "sodium_plugin.option.highlight_color." + color.getTranslationSuffix()))
+                                                        .setDefaultValue(HighlightColor.WHITE)
+                                                        .setBinding(
+                                                                value -> PlayerHighlightConfig.setColor(value),
+                                                                PlayerHighlightConfig::getColor)
+                                        )
+                        )
+                        .addOptionGroup(
+                                builder.createOptionGroup()
                                         .setName(Text.translatable("sodium_plugin.group.hud"))
                                         .addOption(
                                                 builder.createBooleanOption(Identifier.of(MOD_ID, "potion_time"))
@@ -199,7 +235,6 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
                         )
         );
 
-        // 第二页：受击回放
         modOptions.addPage(
                 builder.createOptionPage()
                         .setName(Text.translatable("sodium_plugin.page.hitreplay.title"))
@@ -238,3 +273,4 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
         );
     }
 }
+//怎么全是bug啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊

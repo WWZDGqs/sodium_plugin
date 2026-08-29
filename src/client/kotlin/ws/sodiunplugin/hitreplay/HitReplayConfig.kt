@@ -7,18 +7,15 @@ import net.fabricmc.loader.api.FabricLoader
 import java.nio.file.Files
 import java.nio.file.Path
 
-/**
- * 受击回放的设置项，持久化到本模组配置文件（hit_replay.json）。
- */
+
 object HitReplayConfig {
     private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
 
-    /** 是否记录玩家受到的伤害（受击回放总开关）。 */
     @JvmStatic
     @Volatile
     var recordEnabled: Boolean = true
 
-    /** 最多保留的受击记录条数（超出后丢弃最旧）。 */
+
     @JvmStatic
     @Volatile
     var maxRecords: Int = 50

@@ -9,13 +9,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import ws.sodiunplugin.config.ShakeConfig;
 
-/**
- * 粒子数量百分比控制。
- *
- * 拦截 ParticleManager.addParticle(ParticleEffect, ...) 入口（所有粒子生成都经由它，
- * 内部 createParticle 成功后才加入队列），按配置的概率丢弃粒子：
- * 返回 null 与 vanilla "createParticle 失败" 的语义一致，调用方已安全处理。
- */
 @Mixin(ParticleManager.class)
 public class ParticleManagerMixin {
 

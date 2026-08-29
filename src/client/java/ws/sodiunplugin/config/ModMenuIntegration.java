@@ -4,17 +4,7 @@ import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import net.minecraft.client.gui.screen.Screen;
 
-/**
- * Mod Menu 集成：在 Mod Menu 的模组列表中为本模组提供"配置"按钮。
- *
- * 本模组的所有设置都注册在 Sodium 视频设置界面内的独立一页（通过
- * {@code sodium:config_api_user} 入口点），因此这里的"配置"按钮直接打开
- * Sodium 的视频设置界面，进入后即可看到本模组专属设置列。
- *
- * 为避免编译期依赖 Sodium 的内部 GUI 类（它不在 sodium-fabric-api 中，只在
- * 运行时由 Sodium 主 jar 提供），这里用反射构造 {@code SodiumOptionsGUI}。
- * 若 Sodium 未安装或类名变更，则安全回退到原版视频设置界面，保证不崩溃。
- */
+
 public class ModMenuIntegration implements ModMenuApi {
 
     @Override

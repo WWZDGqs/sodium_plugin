@@ -36,5 +36,21 @@
 	"sodium_plugin.option.hit_replay_max": "最大记录条数",
 	"sodium_plugin.option.hit_replay_max.tooltip": "受击记录最多保留的条数，超出后丢弃最旧的记录。",
 	"sodium_plugin.option.hit_replay_view": "查看受击回放",
-	"sodium_plugin.option.hit_replay_view.tooltip": "打开受击回放记录界面，查看你受到的伤害历史与死亡信息。"
+	"sodium_plugin.option.hit_replay_view.tooltip": "打开受击回放记录界面，查看你受到的伤害历史与死亡信息。",
+	"sodium_plugin.group.highlight": "玩家高亮",
+	"sodium_plugin.option.highlight_players": "高亮附近玩家",
+	"sodium_plugin.option.highlight_players.tooltip": "为范围内的其他玩家添加发光轮廓，便于在复杂地形或黑暗中辨认。仅影响你的画面，其他玩家看不到。",
+	"sodium_plugin.option.highlight_range": "高亮距离",
+	"sodium_plugin.option.highlight_range.tooltip": "距离你多少格以内的玩家会被高亮。超出范围的玩家保持原样。",
+	"sodium_plugin.option.highlight_color": "高亮颜色",
+	"sodium_plugin.option.highlight_color.tooltip": "发光轮廓的颜色。高亮时玩家名字标签会同时变为该颜色。",
+	"sodium_plugin.option.highlight_color.white": "白色",
+	"sodium_plugin.option.highlight_color.red": "红色",
+	"sodium_plugin.option.highlight_color.gold": "金色",
+	"sodium_plugin.option.highlight_color.yellow": "黄色",
+	"sodium_plugin.option.highlight_color.green": "绿色",
+	"sodium_plugin.option.highlight_color.aqua": "青色",
+	"sodium_plugin.option.highlight_color.blue": "蓝色",
+	"sodium_plugin.option.highlight_color.purple": "紫色",
+	"sodium_plugin.option.highlight_color.magenta": "品红色"
 }

@@ -10,9 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import ws.sodiunplugin.hitreplay.HitReplayLog;
 
-/**
- * 在死亡界面打开时，把死亡信息（死亡提示文本）记录到受击回放中。
- */
 @Mixin(DeathScreen.class)
 public class DeathScreenMixin {
 

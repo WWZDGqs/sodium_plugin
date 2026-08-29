@@ -10,14 +10,6 @@ import ws.sodiunplugin.hitreplay.HitReplayLog.HitRecord;
 
 import java.util.List;
 
-/**
- * 受击回放记录查看界面。从 Sodium 设置中的"受击回放"页打开。
- * 列出玩家受到的伤害历史：时间、伤害量、来源、死亡信息，支持滚轮滚动与清空。
- *
- * 渲染策略：先调用 super.render 完成一次（也是唯一一次）背景模糊，再在之上
- * 铺一层不透明深色面板，最后用高对比颜色绘制标题与记录。这样无论 Sodium 设置页
- * 是浅色还是深色，记录文字都清晰可读（避免"白字落在浅色模糊背景上看不见"）。
- */
 public class ReplayLogScreen extends Screen {
     private final Screen parent;
     private List<HitRecord> records = List.of();
@@ -67,20 +59,13 @@ public class ReplayLogScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        // 每帧从数据源刷新一次记录，使"打开页面后才受击"或"页面打开期间受击"也能实时显示。
         this.records = HitReplayLog.getRecords();
 
-        // 先调用父类 render：绘制背景模糊（每帧仅一次，避免 Can only blur once per frame 崩溃）。
         super.render(context, mouseX, mouseY, delta);
-
-        // 在模糊背景之上铺一层半透明深色面板（不是纯黑），保证文字对比度。
-        // 只覆盖内容区（标题条之下、底部按钮栏之上），避免盖住"返回/清空记录"按钮。
         context.fill(0, 36, this.width, this.height - 36, 0xC0353540);
-        // 顶部标题条。
         context.fill(0, 0, this.width, 36, 0xD5454550);
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 10, 0xFFE0E0E0);
 
-        // 诊断：记录数变化时打印实际绘制数量，便于定位"有数据但不显示"问题。
         if (records.size() != lastLoggedCount) {
             lastLoggedCount = records.size();
             StringBuilder sb = new StringBuilder();
@@ -113,7 +98,6 @@ public class ReplayLogScreen extends Screen {
             }
         }
 
-        // 底部提示条。
         context.drawCenteredTextWithShadow(this.textRenderer,
                 Text.literal("滚轮滚动 · 共 " + records.size() + " 条"),
                 this.width / 2, this.height - 52, 0xFF999999);

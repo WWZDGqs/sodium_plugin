@@ -9,15 +9,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import ws.sodiunplugin.config.ShakeConfig;
 
-/**
- * 显示隐身玩家。
- *
- * vanilla 通过 LivingEntity.isInvisibleTo(PlayerEntity) 判断实体对当前视角玩家是否隐形，
- * 该结果决定渲染状态（身体透明度）与名字标签是否显示。开关开启时，对玩家实体
- * 强制返回 false，使隐身玩家像正常玩家一样完全可见。
- *
- * 注意：仅影响渲染判断，不改变游戏逻辑（碰撞、仇恨、目标选择等仍按原版处理）。
- */
 @Mixin(LivingEntityRenderer.class)
 public class LivingEntityRendererMixin {
 

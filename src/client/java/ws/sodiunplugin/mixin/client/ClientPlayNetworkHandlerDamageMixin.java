@@ -17,12 +17,6 @@ import ws.sodiunplugin.hitreplay.HitReplayConfig;
 import ws.sodiunplugin.hitreplay.HitReplayLog;
 import ws.sodiunplugin.hud.DamageDisplayStore;
 
-/**
- * 在客户端收到 [EntityDamageS2CPacket] 时：
- *  - 若目标为本地玩家：调用 [HitReplayLog.beginEvent] 记录"受击来源"，实际伤害量由
- *    [ws.sodiunplugin.mixin.client.ClientPlayerDamageMixin] 通过血量/吸收血下降累加；
- *  - 否则（目标为其他实体）：原有"我造成的伤害"显示逻辑（[DamageDisplayStore.markPending]）。
- */
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkHandlerDamageMixin {
 
@@ -55,7 +49,6 @@ public class ClientPlayNetworkHandlerDamageMixin {
                 damageTypeName = source.getName();
             }
         } catch (Throwable ignored) {
-            // 来源重建失败时使用类型名兜底
         }
         try {
             sourceTypeMsgId = packet.sourceType().value().msgId();
@@ -63,13 +56,11 @@ public class ClientPlayNetworkHandlerDamageMixin {
                 damageTypeName = sourceTypeMsgId;
             }
         } catch (Throwable ignored) {
-            // 拿不到则留空
         }
         boolean isExplosion = sourceTypeMsgId.equals("explosion")
                 || sourceTypeMsgId.equals("player_explosion")
                 || sourceTypeMsgId.equals("badRespawnPoint");
 
-        // 玩家自己受到的伤害 → 受击回放
         if (targetId == playerId) {
             if (HitReplayConfig.getRecordEnabled()) {
                 String sourceName = resolvePlayerDamageSource(client.world, sourceDirectId, sourceCauseId, isExplosion, weaponName);
@@ -81,7 +72,6 @@ public class ClientPlayNetworkHandlerDamageMixin {
             return;
         }
 
-        // 否则：处理"我造成的伤害"显示（原有逻辑）
         if (!ShakeConfig.getDamageDisplayEnabled()) {
             return;
         }
@@ -102,12 +92,6 @@ public class ClientPlayNetworkHandlerDamageMixin {
         DamageDisplayStore.markPending(targetId, finalWeaponName, damageTypeName, livingTarget.getHealth(), livingTarget.getAbsorptionAmount());
     }
 
-    /**
-     * 解析玩家受击的来源显示名：
-     *  - 爆炸类伤害统一显示"爆炸"；
-     *  - 否则优先用直接/间接来源实体的显示名（攻击者名字/生物名）；
-     *  - 都没有则用武器名兜底，最终兜底为"环境伤害"。
-     */
     private static String resolvePlayerDamageSource(ClientWorld world, int directId, int causeId, boolean isExplosion, String weaponName) {
         if (isExplosion) {
             return "爆炸";

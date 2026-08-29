@@ -12,7 +12,8 @@
 		"ClientPlayNetworkHandlerDamageMixin",
 		"ClientPlayerDamageMixin",
 		"DeathScreenMixin",
-		"LightmapGammaMixin"
+		"LightmapGammaMixin",
+		"PlayerHighlightMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

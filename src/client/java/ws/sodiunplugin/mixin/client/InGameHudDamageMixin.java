@@ -11,15 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ws.sodiunplugin.config.ShakeConfig;
 import ws.sodiunplugin.hud.DamageDisplayStore;
 
-/**
- * 在 HUD 的 {@link InGameHud#renderStatusBars} 之后，于血量与饱食度上方绘制伤害显示条。
- *
- * 坐标依据原版 {@code renderStatusBars} 的常量：
- *   - 屏幕中心 x = width / 2
- *   - 血量区中心 x = width / 2 - 91，食物区中心 x = width / 2 + 91
- *   - 底部基线 y = height - 39
- * 伤害条绘制在基线上方（y = height - 39 - 10 起），即血/食图标正上方。
- */
 @Mixin(InGameHud.class)
 public class InGameHudDamageMixin {
 
@@ -44,9 +35,7 @@ public class InGameHudDamageMixin {
         int height = context.getScaledWindowHeight();
 
         int centerX = width / 2;
-        // 血/食条底部基线，参考原版 renderStatusBars 中的 height - 39
         int baseY = height - 39;
-        // 伤害条绘制在基线上方约 10 像素处，多行向上堆叠
         int lineHeight = 10;
         int startY = baseY - 10;
 
@@ -60,11 +49,9 @@ public class InGameHudDamageMixin {
                 continue;
             }
             int alphaByte = (int) (alpha * 255.0f) & 0xFF;
-            // 颜色：白底 + alpha。drawText 的 shadow 模式会用此色绘制描边，alpha 生效。
             int color = (alphaByte << 24) | 0xFFFFFF;
 
             int y = startY - index * lineHeight;
-            // 文本水平居中于屏幕中心（血/食条中间）
             int textWidth = client.textRenderer.getWidth(entry.text);
             int x = centerX - textWidth / 2;
 

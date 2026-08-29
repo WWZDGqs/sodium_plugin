@@ -36,5 +36,21 @@
 	"sodium_plugin.option.hit_replay_max": "Max Records",
 	"sodium_plugin.option.hit_replay_max.tooltip": "Maximum number of hit records to keep; older records are discarded once the limit is reached.",
 	"sodium_plugin.option.hit_replay_view": "View Hit Replay",
-	"sodium_plugin.option.hit_replay_view.tooltip": "Open the hit replay viewer to browse your damage history and death information."
+	"sodium_plugin.option.hit_replay_view.tooltip": "Open the hit replay viewer to browse your damage history and death information.",
+	"sodium_plugin.group.highlight": "Player Highlight",
+	"sodium_plugin.option.highlight_players": "Highlight Nearby Players",
+	"sodium_plugin.option.highlight_players.tooltip": "Draws a glowing outline around nearby players so they are easier to spot in dark or cluttered terrain. Client-side only; other players cannot see it.",
+	"sodium_plugin.option.highlight_range": "Highlight Range",
+	"sodium_plugin.option.highlight_range.tooltip": "Players within this distance (in blocks) are highlighted. Players farther away are left untouched.",
+	"sodium_plugin.option.highlight_color": "Highlight Color",
+	"sodium_plugin.option.highlight_color.tooltip": "Color of the glowing outline. The player's name tag takes the same color while highlighted.",
+	"sodium_plugin.option.highlight_color.white": "White",
+	"sodium_plugin.option.highlight_color.red": "Red",
+	"sodium_plugin.option.highlight_color.gold": "Gold",
+	"sodium_plugin.option.highlight_color.yellow": "Yellow",
+	"sodium_plugin.option.highlight_color.green": "Green",
+	"sodium_plugin.option.highlight_color.aqua": "Aqua",
+	"sodium_plugin.option.highlight_color.blue": "Blue",
+	"sodium_plugin.option.highlight_color.purple": "Purple",
+	"sodium_plugin.option.highlight_color.magenta": "Magenta"
 }

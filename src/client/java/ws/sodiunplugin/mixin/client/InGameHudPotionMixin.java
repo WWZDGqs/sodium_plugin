@@ -43,8 +43,6 @@ public class InGameHudPotionMixin {
         if (effects.isEmpty()) {
             return;
         }
-
-        // 复刻 vanilla 的排序：Ordering.natural().reverse()（按 StatusEffectInstance 自然序降序）。
         List<StatusEffectInstance> sorted = new ArrayList<>(effects);
         sorted.sort(Comparator.reverseOrder());
 
@@ -58,8 +56,8 @@ public class InGameHudPotionMixin {
         int nonBeneficial = 0;
 
         long now = System.currentTimeMillis();
-        float hue = (now % 2000L) / 2000.0f;                 // 每 2 秒循环一次完整色相
-        float pulse = (float) (Math.sin(now / 110.0) * 0.5 + 0.5); // 0..1 呼吸
+        float hue = (now % 2000L) / 2000.0f;                 
+        float pulse = (float) (Math.sin(now / 110.0) * 0.5 + 0.5); 
         int borderRgb = hsbToRgb(hue, 1.0f, 1.0f);
         int borderColor = ((int) (0x80 + 0x7F * pulse) << 24) | (borderRgb & 0x00FFFFFF);
 
@@ -89,14 +87,14 @@ public class InGameHudPotionMixin {
             }
 
             if (ShakeConfig.getPotionTimeEnabled()) {
-                int seconds = (duration + 19) / 20; // 向上取整到整秒
+                int seconds = (duration + 19) / 20; 
                 if (seconds <= 0) {
                     seconds = 1;
                 }
                 String label = seconds + "s";
                 int textWidth = textRenderer.getWidth(label);
                 int tx = x + CELL / 2 - textWidth / 2;
-                int ty = y + 22; // 基线靠近图标底部
+                int ty = y + 22; 
                 context.fill(x + 2, y + 14, x + CELL - 2, y + 23, 0xB0000000);
                 context.drawText(textRenderer, Text.literal(label), tx, ty, 0xFFFFFFFF, false);
             }

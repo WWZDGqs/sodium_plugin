@@ -18,7 +18,6 @@ public class ModMenuIntegration implements ModMenuApi {
             var constructor = guiClass.getConstructor(Screen.class);
             return (Screen) constructor.newInstance(parent);
         } catch (Throwable t) {
-            // Sodium 不可用或内部类名变更：回退到原版视频设置界面
             try {
                 Class<?> optionsScreen = Class.forName("net.minecraft.client.gui.screen.options.OptionsScreen");
                 var ctor = optionsScreen.getConstructor(Screen.class, net.minecraft.client.option.GameOptions.class);

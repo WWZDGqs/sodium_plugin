@@ -1,0 +1,21 @@
+{
+	"required": true,
+	"package": "ws.sodiunplugin.mixin.client",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"GameRendererMixin",
+		"GameRendererEffectsMixin",
+		"ParticleManagerMixin",
+		"LivingEntityRendererMixin",
+		"InGameHudPotionMixin",
+		"InGameHudDamageMixin",
+		"ClientPlayNetworkHandlerDamageMixin",
+		"ClientPlayerDamageMixin",
+		"DeathScreenMixin",
+		"LightmapGammaMixin",
+		"PlayerHighlightMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

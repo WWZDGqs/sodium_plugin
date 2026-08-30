@@ -1,0 +1,56 @@
+{
+	"schemaVersion": 1,
+	"id": "sodium_plugin",
+	"version": "${version}",
+	"name": "Sodium View Shake Control",
+	"description": "在 Sodium 视频设置中新增一列「视角抖动控制」，可自由调节视角抖动强度（0%-100%），并分别开关疾跑抖动与受击抖动。",
+	"authors": [
+		"WWZDGqs"
+	],
+	"contact": {
+		"homepage": "https://github.com/WWZDGqs/WWZDGqs",
+		"sources": "https://github.com/WWZDGqs/WWZDGqs",
+		"issues": "https://github.com/WWZDGqs/WWZDGqs/issues"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/sodium_plugin/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"main": [
+			{
+				"value": "ws.sodiunplugin.Ws_sodium_plugin",
+				"adapter": "kotlin"
+			}
+		],
+		"client": [
+			{
+				"value": "ws.sodiunplugin.Ws_sodium_pluginClient",
+				"adapter": "kotlin"
+			}
+		],
+		"sodium:config_api_user": [
+			"ws.sodiunplugin.config.ShakeConfigEntryPoint"
+		],
+		"modmenu": [
+			"ws.sodiunplugin.config.ModMenuIntegration"
+		]
+	},
+	"mixins": [
+		"sodium_plugin.mixins.json",
+		{
+			"config": "sodium_plugin.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*",
+		"fabric-language-kotlin": "*",
+		"sodium": ">=0.8.13"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

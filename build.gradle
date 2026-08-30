@@ -62,22 +62,12 @@ dependencies {
 	modCompileOnly "com.terraformersmc:modmenu:17.0.0"
 }
 
-// ---------------------------------------------------------------------------
-// 编译期桩类（stubs）
-//
-// 本环境的 loom（1.14.10）在 1.21.11 下提供的 minecraft 拆分 jar 缺少
-// com.mojang.blaze3d.vertex.PoseStack 与 net.minecraft.entity.player.Player 等类，
-// 而 Mixin 的 @Redirect 处理器方法签名需要引用这些类型。
-// 这些桩类只参与 javac 编译（编译到 build/stubs-classes），绝不打包进 mod jar；
-// 运行时由游戏自带的真实类加载并遮蔽，不产生任何冲突。
-// ---------------------------------------------------------------------------
 def stubClassesDir = file("build/stubs-classes")
 
 tasks.register("compileStubs", JavaCompile) {
 	source fileTree("stubs")
 	include "**/*.java"
 	destinationDirectory.set(stubClassesDir)
-	// joml 提供 org.joml.Quaternionfc（桩 PoseStack.mulPose 参数所需）；其余类型均为桩自身。
 	classpath = configurations.detachedConfiguration(
 			dependencies.create("org.joml:joml:1.10.8")
 	)
@@ -85,7 +75,6 @@ tasks.register("compileStubs", JavaCompile) {
 	options.encoding = "UTF-8"
 }
 
-// 让 client 源集的 Java/Kotlin 编译都能看到桩类，并在编译前先生成桩类。
 sourceSets.client.compileClasspath += files(stubClassesDir)
 tasks.named("compileClientJava") {
 	dependsOn "compileStubs"

@@ -10,6 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import ws.sodiunplugin.feature.ChestEspConfig;
 import ws.sodiunplugin.feature.HighlightColor;
 import ws.sodiunplugin.feature.PlayerHighlightConfig;
 import ws.sodiunplugin.hitreplay.HitReplayConfig;
@@ -24,6 +25,7 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
         ShakeConfig.save();
         HitReplayConfig.save();
         PlayerHighlightConfig.save();
+        ChestEspConfig.save();
     };
 
     private static final ControlValueFormatter PERCENT_FORMATTER = value -> Text.literal(value + "%");
@@ -149,6 +151,11 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
                                                                 ShakeConfig::getShowInvisiblePlayers)
                                         )
                         )
+        );
+
+        modOptions.addPage(
+                builder.createOptionPage()
+                        .setName(Text.translatable("sodium_plugin.page.highlight.title"))
                         .addOptionGroup(
                                 builder.createOptionGroup()
                                         .setName(Text.translatable("sodium_plugin.group.highlight"))
@@ -189,6 +196,11 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
                                                                 PlayerHighlightConfig::getColor)
                                         )
                         )
+        );
+
+        modOptions.addPage(
+                builder.createOptionPage()
+                        .setName(Text.translatable("sodium_plugin.page.hud.title"))
                         .addOptionGroup(
                                 builder.createOptionGroup()
                                         .setName(Text.translatable("sodium_plugin.group.hud"))
@@ -231,6 +243,71 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
                                                         .setBinding(
                                                                 value -> ShakeConfig.setExplosionCreditEnabled(value),
                                                                 ShakeConfig::getExplosionCreditEnabled)
+                                        )
+                        )
+        );
+
+        modOptions.addPage(
+                builder.createOptionPage()
+                        .setName(Text.translatable("sodium_plugin.page.chestesp.title"))
+                        .addOptionGroup(
+                                builder.createOptionGroup()
+                                        .setName(Text.translatable("sodium_plugin.group.chestesp"))
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "chest_esp_enabled"))
+                                                        .setName(Text.translatable("sodium_plugin.option.chest_esp_enabled"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.chest_esp_enabled.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(false)
+                                                        .setBinding(
+                                                                value -> ChestEspConfig.setEnabled(value),
+                                                                ChestEspConfig::getEnabled)
+                                        )
+                                        .addOption(
+                                                builder.createIntegerOption(Identifier.of(MOD_ID, "chest_esp_range"))
+                                                        .setName(Text.translatable("sodium_plugin.option.chest_esp_range"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.chest_esp_range.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setRange(8, 128, 1)
+                                                        .setDefaultValue(32)
+                                                        .setValueFormatter(PLAIN_FORMATTER)
+                                                        .setBinding(
+                                                                value -> ChestEspConfig.setRange(value),
+                                                                ChestEspConfig::getRange)
+                                        )
+                        )
+                        .addOptionGroup(
+                                builder.createOptionGroup()
+                                        .setName(Text.translatable("sodium_plugin.group.chestesp.types"))
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "chest_esp_chest"))
+                                                        .setName(Text.translatable("sodium_plugin.option.chest_esp_chest"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.chest_esp_chest.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(true)
+                                                        .setBinding(
+                                                                value -> ChestEspConfig.setShowChest(value),
+                                                                ChestEspConfig::getShowChest)
+                                        )
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "chest_esp_shulker"))
+                                                        .setName(Text.translatable("sodium_plugin.option.chest_esp_shulker"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.chest_esp_shulker.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(true)
+                                                        .setBinding(
+                                                                value -> ChestEspConfig.setShowShulkerBox(value),
+                                                                ChestEspConfig::getShowShulkerBox)
+                                        )
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "chest_esp_ender"))
+                                                        .setName(Text.translatable("sodium_plugin.option.chest_esp_ender"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.chest_esp_ender.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(true)
+                                                        .setBinding(
+                                                                value -> ChestEspConfig.setShowEnderChest(value),
+                                                                ChestEspConfig::getShowEnderChest)
                                         )
                         )
         );

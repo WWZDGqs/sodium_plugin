@@ -35,7 +35,6 @@ public class ClientPlayNetworkHandlerDamageMixin {
         int sourceCauseId = packet.sourceCauseId();
         int playerId = client.player.getId();
 
-        // 提取来源信息（玩家受击与"我造成的伤害"都需要）
         String weaponName = null;
         String damageTypeName = "";
         String sourceTypeMsgId = "";

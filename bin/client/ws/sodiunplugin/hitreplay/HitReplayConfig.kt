@@ -1,4 +1,4 @@
-package ws.sodiunplugin.feature
+package ws.sodiunplugin.hitreplay
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -7,26 +7,24 @@ import net.fabricmc.loader.api.FabricLoader
 import java.nio.file.Files
 import java.nio.file.Path
 
-object PlayerHighlightConfig {
+
+object HitReplayConfig {
     private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
 
     @JvmStatic
     @Volatile
-    var enabled: Boolean = false
+    var recordEnabled: Boolean = true
+
 
     @JvmStatic
     @Volatile
-    var range: Int = 64
+    var maxRecords: Int = 50
         set(value) {
-            field = value.coerceIn(8, 128)
+            field = value.coerceIn(10, 500)
         }
 
-    @JvmStatic
-    @Volatile
-    var color: HighlightColor = HighlightColor.WHITE
-
     private val configPath: Path
-        get() = FabricLoader.getInstance().configDir.resolve("sodium_plugin/player_highlight.json")
+        get() = FabricLoader.getInstance().configDir.resolve("sodium_plugin/hit_replay.json")
 
     @JvmStatic
     fun load() {
@@ -37,12 +35,8 @@ object PlayerHighlightConfig {
         }
         try {
             val root = gson.fromJson(Files.readString(path), JsonObject::class.java) ?: return
-            if (root.has("enabled")) enabled = root.get("enabled").asBoolean
-            if (root.has("range")) range = root.get("range").asInt
-            if (root.has("color")) {
-                val name = root.get("color").asString
-                color = runCatching { HighlightColor.valueOf(name) }.getOrDefault(HighlightColor.WHITE)
-            }
+            if (root.has("recordEnabled")) recordEnabled = root.get("recordEnabled").asBoolean
+            if (root.has("maxRecords")) maxRecords = root.get("maxRecords").asInt
         } catch (e: Exception) {
             save()
         }
@@ -52,9 +46,8 @@ object PlayerHighlightConfig {
     fun save() {
         try {
             val root = JsonObject()
-            root.addProperty("enabled", enabled)
-            root.addProperty("range", range)
-            root.addProperty("color", color.name)
+            root.addProperty("recordEnabled", recordEnabled)
+            root.addProperty("maxRecords", maxRecords)
             val path = configPath
             path.parent?.let { Files.createDirectories(it) }
             Files.writeString(path, gson.toJson(root))

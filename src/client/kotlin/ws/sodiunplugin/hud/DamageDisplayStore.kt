@@ -2,6 +2,9 @@ package ws.sodiunplugin.hud
 
 import net.minecraft.client.MinecraftClient
 import net.minecraft.entity.LivingEntity
+import ws.sodiunplugin.combat.ComboTracker
+import ws.sodiunplugin.combat.FloatingDamageTexts
+import ws.sodiunplugin.config.ShakeConfig
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
@@ -23,6 +26,7 @@ object DamageDisplayStore {
         @JvmField val timestamp: Long,
         @JvmField val oldHealth: Float,
         @JvmField val oldAbsorption: Float,
+        @JvmField val isAttack: Boolean,
     )
 
     @JvmStatic
@@ -32,9 +36,10 @@ object DamageDisplayStore {
         damageTypeName: String,
         oldHealth: Float,
         oldAbsorption: Float,
+        isAttack: Boolean,
     ) {
         val now = System.currentTimeMillis()
-        pending[entityId] = Pending(weaponName, damageTypeName, now, oldHealth, oldAbsorption)
+        pending[entityId] = Pending(weaponName, damageTypeName, now, oldHealth, oldAbsorption, isAttack)
     }
 
     @JvmStatic
@@ -64,8 +69,14 @@ object DamageDisplayStore {
                 val absorptionLoss = (p.oldAbsorption - entity.absorptionAmount).coerceAtLeast(0.0f)
                 val amount = healthLoss + absorptionLoss
                 if (amount > 0.0f) {
-                    val targetName = entity.name.string ?: "目标"
-                    record(targetName, amount, p.weaponName, p.damageTypeName)
+                    if (ShakeConfig.damageDisplayEnabled) {
+                        val targetName = entity.name.string ?: "目标"
+                        record(targetName, amount, p.weaponName, p.damageTypeName)
+                    }
+                    if (p.isAttack) {
+                        if (ShakeConfig.damageFloatEnabled) FloatingDamageTexts.add(amount)
+                        if (ShakeConfig.comboEnabled) ComboTracker.registerHit()
+                    }
                 }
             }
             iterator.remove()

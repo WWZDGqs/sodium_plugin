@@ -244,6 +244,36 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
                                                                 value -> ShakeConfig.setExplosionCreditEnabled(value),
                                                                 ShakeConfig::getExplosionCreditEnabled)
                                         )
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "damage_float"))
+                                                        .setName(Text.translatable("sodium_plugin.option.damage_float"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.damage_float.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(true)
+                                                        .setBinding(
+                                                                value -> ShakeConfig.setDamageFloatEnabled(value),
+                                                                ShakeConfig::getDamageFloatEnabled)
+                                        )
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "combo"))
+                                                        .setName(Text.translatable("sodium_plugin.option.combo"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.combo.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(true)
+                                                        .setBinding(
+                                                                value -> ShakeConfig.setComboEnabled(value),
+                                                                ShakeConfig::getComboEnabled)
+                                        )
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "projectile_cooldown"))
+                                                        .setName(Text.translatable("sodium_plugin.option.projectile_cooldown"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.projectile_cooldown.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(true)
+                                                        .setBinding(
+                                                                value -> ShakeConfig.setProjectileCooldownEnabled(value),
+                                                                ShakeConfig::getProjectileCooldownEnabled)
+                                        )
                         )
         );
 

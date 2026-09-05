@@ -9,6 +9,7 @@
 		"LivingEntityRendererMixin",
 		"InGameHudPotionMixin",
 		"InGameHudDamageMixin",
+		"InGameHudCombatMixin",
 		"ClientPlayNetworkHandlerDamageMixin",
 		"ClientPlayerDamageMixin",
 		"DeathScreenMixin",

@@ -71,7 +71,7 @@ public class ClientPlayNetworkHandlerDamageMixin {
             return;
         }
 
-        if (!ShakeConfig.getDamageDisplayEnabled()) {
+        if (!ShakeConfig.getDamageDisplayEnabled() && !ShakeConfig.getDamageFloatEnabled() && !ShakeConfig.getComboEnabled()) {
             return;
         }
 
@@ -88,7 +88,8 @@ public class ClientPlayNetworkHandlerDamageMixin {
         }
 
         String finalWeaponName = byMe ? weaponName : "爆炸";
-        DamageDisplayStore.markPending(targetId, finalWeaponName, damageTypeName, livingTarget.getHealth(), livingTarget.getAbsorptionAmount());
+        boolean isAttack = byMe;
+        DamageDisplayStore.markPending(targetId, finalWeaponName, damageTypeName, livingTarget.getHealth(), livingTarget.getAbsorptionAmount(), isAttack);
     }
 
     private static String resolvePlayerDamageSource(ClientWorld world, int directId, int causeId, boolean isExplosion, String weaponName) {

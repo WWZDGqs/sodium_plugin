@@ -47,6 +47,18 @@ object ShakeConfig {
 
     @JvmStatic
     @Volatile
+    var damageFloatEnabled: Boolean = true
+
+    @JvmStatic
+    @Volatile
+    var comboEnabled: Boolean = true
+
+    @JvmStatic
+    @Volatile
+    var projectileCooldownEnabled: Boolean = true
+
+    @JvmStatic
+    @Volatile
     var explosionCreditEnabled: Boolean = true
 
     @JvmStatic
@@ -120,6 +132,15 @@ object ShakeConfig {
             if (root.has("damageDisplayEnabled")) {
                 damageDisplayEnabled = root.get("damageDisplayEnabled").asBoolean
             }
+            if (root.has("damageFloatEnabled")) {
+                damageFloatEnabled = root.get("damageFloatEnabled").asBoolean
+            }
+            if (root.has("comboEnabled")) {
+                comboEnabled = root.get("comboEnabled").asBoolean
+            }
+            if (root.has("projectileCooldownEnabled")) {
+                projectileCooldownEnabled = root.get("projectileCooldownEnabled").asBoolean
+            }
             if (root.has("explosionCreditEnabled")) {
                 explosionCreditEnabled = root.get("explosionCreditEnabled").asBoolean
             }
@@ -152,6 +173,9 @@ object ShakeConfig {
             root.addProperty("potionTimeEnabled", potionTimeEnabled)
             root.addProperty("potionBorderEnabled", potionBorderEnabled)
             root.addProperty("damageDisplayEnabled", damageDisplayEnabled)
+            root.addProperty("damageFloatEnabled", damageFloatEnabled)
+            root.addProperty("comboEnabled", comboEnabled)
+            root.addProperty("projectileCooldownEnabled", projectileCooldownEnabled)
             root.addProperty("explosionCreditEnabled", explosionCreditEnabled)
             root.addProperty("particlePercentage", particlePercentage)
             root.addProperty("fovEffect", fovEffect)

@@ -2,6 +2,8 @@ package ws.sodiunplugin
 
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+import ws.sodiunplugin.combat.ComboTracker
+import ws.sodiunplugin.combat.FloatingDamageTexts
 import ws.sodiunplugin.config.ShakeConfig
 import ws.sodiunplugin.feature.ChestEspConfig
 import ws.sodiunplugin.feature.ChestEspRenderer

@@ -48,7 +48,7 @@
 		"java": ">=21",
 		"fabric-api": "*",
 		"fabric-language-kotlin": "*",
-		"sodium": ">=0.8.13"
+		"sodium": ">=0.8.12"
 	},
 	"suggests": {
 		"another-mod": "*"

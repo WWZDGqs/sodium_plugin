@@ -4,7 +4,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.hit.EntityHitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,6 +28,9 @@ public class InGameHudCombatMixin {
         renderFloatingDamage(client, context);
         renderCombo(client, context);
         renderProjectileCooldown(client, context);
+        renderDynamicCrosshair(client, context);
+        renderDistanceDisplay(client, context);
+        renderAttackCooldown(client, context);
     }
 
     private void renderFloatingDamage(MinecraftClient client, DrawContext context) {
@@ -107,5 +112,87 @@ public class InGameHudCombatMixin {
             context.fill(barX, barY, barX + fillW, barY + 6, 0xFF55CCFF);
             drawn++;
         }
+    }
+
+    private void renderDynamicCrosshair(MinecraftClient client, DrawContext context) {
+        if (!ShakeConfig.getDynamicCrosshairEnabled()) {
+            return;
+        }
+        ClientPlayerEntity player = client.player;
+        if (player == null) {
+            return;
+        }
+        var hit = client.crosshairTarget;
+        boolean aimingEntity = hit instanceof EntityHitResult;
+        boolean critReady = player.fallDistance > 0.0f
+                && !player.isOnGround()
+                && !player.isClimbing()
+                && !player.isSprinting()
+                && !player.hasVehicle();
+        if (!aimingEntity && !critReady) {
+            return;
+        }
+        int width = context.getScaledWindowWidth();
+        int height = context.getScaledWindowHeight();
+        int cx = width / 2;
+        int cy = height / 2;
+        int color;
+        if (critReady) {
+            long t = System.currentTimeMillis() % 600L;
+            int alpha = t < 300L ? 0xFF : 0x99;
+            color = (alpha << 24) | 0xFFD700;
+        } else {
+            color = 0xFFFF5555;
+        }
+        int len = 9;
+        int thick = 2;
+        context.fill(cx - len, cy - thick / 2, cx + len, cy + thick / 2 + 1, color);
+        context.fill(cx - thick / 2, cy - len, cx + thick / 2 + 1, cy + len, color);
+    }
+
+    private void renderDistanceDisplay(MinecraftClient client, DrawContext context) {
+        if (!ShakeConfig.getDistanceDisplayEnabled()) {
+            return;
+        }
+        ClientPlayerEntity player = client.player;
+        if (player == null) {
+            return;
+        }
+        var hit = client.crosshairTarget;
+        if (!(hit instanceof EntityHitResult entityHit)) {
+            return;
+        }
+        Entity target = entityHit.getEntity();
+        if (target == null) {
+            return;
+        }
+        int width = context.getScaledWindowWidth();
+        int height = context.getScaledWindowHeight();
+        float dist = player.distanceTo(target);
+        String text = String.format("%.1f", dist);
+        int x = width / 2 + 14;
+        int y = height / 2 - 4;
+        context.drawText(client.textRenderer, text, x, y, 0xFFFFFFFF, true);
+    }
+
+    private void renderAttackCooldown(MinecraftClient client, DrawContext context) {
+        if (!ShakeConfig.getAttackCooldownEnabled()) {
+            return;
+        }
+        ClientPlayerEntity player = client.player;
+        if (player == null) {
+            return;
+        }
+        float progress = player.getAttackCooldownProgress(0f);
+        int width = context.getScaledWindowWidth();
+        int height = context.getScaledWindowHeight();
+        int barW = 44;
+        int barH = 3;
+        int x = width / 2 - barW / 2;
+        int y = height / 2 + 16;
+        context.fill(x, y, x + barW, y + barH, 0x66000000);
+        int fillW = (int) (barW * Math.max(0f, Math.min(1f, progress)));
+        int color = progress >= 1.0f ? 0xFF55FF55 : 0xFFFFAA00;
+        context.fill(x, y, x + fillW, y + barH, color);
     }
 }

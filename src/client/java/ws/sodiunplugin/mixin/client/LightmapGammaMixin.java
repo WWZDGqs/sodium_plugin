@@ -1,6 +1,6 @@
 package ws.sodiunplugin.mixin.client;
 
-import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.render.LightmapTextureManager;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,6 +20,9 @@ public class LightmapGammaMixin {
             )
     )
     private Object redirectGammaGetValue(SimpleOption<?> instance) {
-        return ShakeConfig.getGammaDouble();
+        if (instance == MinecraftClient.getInstance().options.getGamma()) {
+            return ShakeConfig.getGammaDouble();
+        }
+        return instance.getValue();
     }
 }

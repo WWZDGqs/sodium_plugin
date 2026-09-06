@@ -59,6 +59,18 @@ object ShakeConfig {
 
     @JvmStatic
     @Volatile
+    var dynamicCrosshairEnabled: Boolean = true
+
+    @JvmStatic
+    @Volatile
+    var distanceDisplayEnabled: Boolean = true
+
+    @JvmStatic
+    @Volatile
+    var attackCooldownEnabled: Boolean = true
+
+    @JvmStatic
+    @Volatile
     var explosionCreditEnabled: Boolean = true
 
     @JvmStatic
@@ -141,6 +153,15 @@ object ShakeConfig {
             if (root.has("projectileCooldownEnabled")) {
                 projectileCooldownEnabled = root.get("projectileCooldownEnabled").asBoolean
             }
+            if (root.has("dynamicCrosshairEnabled")) {
+                dynamicCrosshairEnabled = root.get("dynamicCrosshairEnabled").asBoolean
+            }
+            if (root.has("distanceDisplayEnabled")) {
+                distanceDisplayEnabled = root.get("distanceDisplayEnabled").asBoolean
+            }
+            if (root.has("attackCooldownEnabled")) {
+                attackCooldownEnabled = root.get("attackCooldownEnabled").asBoolean
+            }
             if (root.has("explosionCreditEnabled")) {
                 explosionCreditEnabled = root.get("explosionCreditEnabled").asBoolean
             }
@@ -176,6 +197,9 @@ object ShakeConfig {
             root.addProperty("damageFloatEnabled", damageFloatEnabled)
             root.addProperty("comboEnabled", comboEnabled)
             root.addProperty("projectileCooldownEnabled", projectileCooldownEnabled)
+            root.addProperty("dynamicCrosshairEnabled", dynamicCrosshairEnabled)
+            root.addProperty("distanceDisplayEnabled", distanceDisplayEnabled)
+            root.addProperty("attackCooldownEnabled", attackCooldownEnabled)
             root.addProperty("explosionCreditEnabled", explosionCreditEnabled)
             root.addProperty("particlePercentage", particlePercentage)
             root.addProperty("fovEffect", fovEffect)

@@ -275,6 +275,40 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
                                                                 ShakeConfig::getProjectileCooldownEnabled)
                                         )
                         )
+                        .addOptionGroup(
+                                builder.createOptionGroup()
+                                        .setName(Text.translatable("sodium_plugin.group.combat"))
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "dynamic_crosshair"))
+                                                        .setName(Text.translatable("sodium_plugin.option.dynamic_crosshair"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.dynamic_crosshair.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(true)
+                                                        .setBinding(
+                                                                value -> ShakeConfig.setDynamicCrosshairEnabled(value),
+                                                                ShakeConfig::getDynamicCrosshairEnabled)
+                                        )
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "distance_display"))
+                                                        .setName(Text.translatable("sodium_plugin.option.distance_display"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.distance_display.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(true)
+                                                        .setBinding(
+                                                                value -> ShakeConfig.setDistanceDisplayEnabled(value),
+                                                                ShakeConfig::getDistanceDisplayEnabled)
+                                        )
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "attack_cooldown"))
+                                                        .setName(Text.translatable("sodium_plugin.option.attack_cooldown"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.attack_cooldown.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(true)
+                                                        .setBinding(
+                                                                value -> ShakeConfig.setAttackCooldownEnabled(value),
+                                                                ShakeConfig::getAttackCooldownEnabled)
+                                        )
+                        )
         );
 
         modOptions.addPage(

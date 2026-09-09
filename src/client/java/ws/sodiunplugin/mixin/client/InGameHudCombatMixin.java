@@ -4,20 +4,23 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import ws.sodiunplugin.combat.ComboTracker;
 import ws.sodiunplugin.combat.FloatingDamageTexts;
 import ws.sodiunplugin.config.ShakeConfig;
 
 @Mixin(InGameHud.class)
 public class InGameHudCombatMixin {
+
+    private static final double AIM_TOLERANCE = Math.toRadians(8.0);
 
     @Inject(method = "renderStatusBars(Lnet/minecraft/client/gui/DrawContext;)V", at = @At("RETURN"))
     private void onRenderStatusBarsCombat(DrawContext context, CallbackInfo ci) {
@@ -26,11 +29,7 @@ public class InGameHudCombatMixin {
             return;
         }
         renderFloatingDamage(client, context);
-        renderCombo(client, context);
-        renderProjectileCooldown(client, context);
-        renderDynamicCrosshair(client, context);
         renderDistanceDisplay(client, context);
-        renderAttackCooldown(client, context);
     }
 
     private void renderFloatingDamage(MinecraftClient client, DrawContext context) {
@@ -60,96 +59,6 @@ public class InGameHudCombatMixin {
         }
     }
 
-    private void renderCombo(MinecraftClient client, DrawContext context) {
-        if (!ShakeConfig.getComboEnabled()) {
-            return;
-        }
-        int combo = ComboTracker.INSTANCE.getCombo();
-        if (combo < 2) {
-            return;
-        }
-        int width = context.getScaledWindowWidth();
-        int height = context.getScaledWindowHeight();
-        int x = width - 12;
-        int y = 14;
-        String comboText = "连击 x" + combo;
-        String peakText = "最高 x" + ComboTracker.INSTANCE.getMaxCombo();
-        int cw = client.textRenderer.getWidth(comboText);
-        int pw = client.textRenderer.getWidth(peakText);
-        context.drawText(client.textRenderer, comboText, x - cw, y, 0xFFFF55, true);
-        context.drawText(client.textRenderer, peakText, x - pw, y + 12, 0xAAAAAA, true);
-    }
-
-    private void renderProjectileCooldown(MinecraftClient client, DrawContext context) {
-        if (!ShakeConfig.getProjectileCooldownEnabled()) {
-            return;
-        }
-        ClientPlayerEntity player = client.player;
-        if (player == null) {
-            return;
-        }
-        var cm = player.getItemCooldownManager();
-        int width = context.getScaledWindowWidth();
-        int height = context.getScaledWindowHeight();
-        int barW = 120;
-        int barX = width - 12 - barW;
-        int drawn = 0;
-        for (ItemStack stack : new ItemStack[]{player.getMainHandStack(), player.getOffHandStack()}) {
-            if (stack.isEmpty()) {
-                continue;
-            }
-            if (!cm.isCoolingDown(stack)) {
-                continue;
-            }
-            float progress = cm.getCooldownProgress(stack, 0f);
-            int pct = (int) (progress * 100f);
-            int barY = height - 54 - drawn * 20;
-            String label = stack.getName().getString() + " " + pct + "%";
-            int labelW = client.textRenderer.getWidth(label);
-            context.drawText(client.textRenderer, label, barX + barW - labelW, barY - 10, 0xFFFFFF, true);
-            context.fill(barX, barY, barX + barW, barY + 6, 0x66000000);
-            int fillW = (int) (barW * progress);
-            context.fill(barX, barY, barX + fillW, barY + 6, 0xFF55CCFF);
-            drawn++;
-        }
-    }
-
-    private void renderDynamicCrosshair(MinecraftClient client, DrawContext context) {
-        if (!ShakeConfig.getDynamicCrosshairEnabled()) {
-            return;
-        }
-        ClientPlayerEntity player = client.player;
-        if (player == null) {
-            return;
-        }
-        var hit = client.crosshairTarget;
-        boolean aimingEntity = hit instanceof EntityHitResult;
-        boolean critReady = player.fallDistance > 0.0f
-                && !player.isOnGround()
-                && !player.isClimbing()
-                && !player.isSprinting()
-                && !player.hasVehicle();
-        if (!aimingEntity && !critReady) {
-            return;
-        }
-        int width = context.getScaledWindowWidth();
-        int height = context.getScaledWindowHeight();
-        int cx = width / 2;
-        int cy = height / 2;
-        int color;
-        if (critReady) {
-            long t = System.currentTimeMillis() % 600L;
-            int alpha = t < 300L ? 0xFF : 0x99;
-            color = (alpha << 24) | 0xFFD700;
-        } else {
-            color = 0xFFFF5555;
-        }
-        int len = 9;
-        int thick = 2;
-        context.fill(cx - len, cy - thick / 2, cx + len, cy + thick / 2 + 1, color);
-        context.fill(cx - thick / 2, cy - len, cx + thick / 2 + 1, cy + len, color);
-    }
-
     private void renderDistanceDisplay(MinecraftClient client, DrawContext context) {
         if (!ShakeConfig.getDistanceDisplayEnabled()) {
             return;
@@ -158,11 +67,7 @@ public class InGameHudCombatMixin {
         if (player == null) {
             return;
         }
-        var hit = client.crosshairTarget;
-        if (!(hit instanceof EntityHitResult entityHit)) {
-            return;
-        }
-        Entity target = entityHit.getEntity();
+        Entity target = findAimedPlayer(client, player);
         if (target == null) {
             return;
         }
@@ -175,24 +80,41 @@ public class InGameHudCombatMixin {
         context.drawText(client.textRenderer, text, x, y, 0xFFFFFFFF, true);
     }
 
-    private void renderAttackCooldown(MinecraftClient client, DrawContext context) {
-        if (!ShakeConfig.getAttackCooldownEnabled()) {
-            return;
+    private Entity findAimedPlayer(MinecraftClient client, ClientPlayerEntity player) {
+        var hit = client.crosshairTarget;
+        if (hit instanceof EntityHitResult entityHit) {
+            Entity e = entityHit.getEntity();
+            if (e instanceof PlayerEntity && e != player) {
+                return e;
+            }
         }
-        ClientPlayerEntity player = client.player;
-        if (player == null) {
-            return;
+        ClientWorld world = client.world;
+        if (world == null) {
+            return null;
         }
-        float progress = player.getAttackCooldownProgress(0f);
-        int width = context.getScaledWindowWidth();
-        int height = context.getScaledWindowHeight();
-        int barW = 44;
-        int barH = 3;
-        int x = width / 2 - barW / 2;
-        int y = height / 2 + 16;
-        context.fill(x, y, x + barW, y + barH, 0x66000000);
-        int fillW = (int) (barW * Math.max(0f, Math.min(1f, progress)));
-        int color = progress >= 1.0f ? 0xFF55FF55 : 0xFFFFAA00;
-        context.fill(x, y, x + fillW, y + barH, color);
+        Vec3d from = player.getEntityPos();
+        Vec3d look = player.getRotationVec(1.0F);
+        Entity best = null;
+        double bestDot = Math.cos(AIM_TOLERANCE);
+        for (PlayerEntity other : world.getPlayers()) {
+            if (other == player) {
+                continue;
+            }
+            if (other.isInvisible()) {
+                continue;
+            }
+            Vec3d aimPoint = other.getEntityPos().add(0.0, other.getHeight() * 0.5, 0.0);
+            Vec3d dir = aimPoint.subtract(from);
+            double len = dir.length();
+            if (len < 1.0E-6) {
+                continue;
+            }
+            double dot = look.dotProduct(dir.multiply(1.0 / len));
+            if (dot > bestDot) {
+                bestDot = dot;
+                best = other;
+            }
+        }
+        return best;
     }
 }

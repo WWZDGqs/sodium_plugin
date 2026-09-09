@@ -2,7 +2,6 @@ package ws.sodiunplugin.hud
 
 import net.minecraft.client.MinecraftClient
 import net.minecraft.entity.LivingEntity
-import ws.sodiunplugin.combat.ComboTracker
 import ws.sodiunplugin.combat.FloatingDamageTexts
 import ws.sodiunplugin.config.ShakeConfig
 import java.util.concurrent.ConcurrentHashMap
@@ -75,7 +74,6 @@ object DamageDisplayStore {
                     }
                     if (p.isAttack) {
                         if (ShakeConfig.damageFloatEnabled) FloatingDamageTexts.add(amount)
-                        if (ShakeConfig.comboEnabled) ComboTracker.registerHit()
                     }
                 }
             }

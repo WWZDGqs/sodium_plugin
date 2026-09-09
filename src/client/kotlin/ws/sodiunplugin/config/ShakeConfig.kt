@@ -39,10 +39,6 @@ object ShakeConfig {
 
     @JvmStatic
     @Volatile
-    var potionBorderEnabled: Boolean = true
-
-    @JvmStatic
-    @Volatile
     var damageDisplayEnabled: Boolean = true
 
     @JvmStatic
@@ -51,23 +47,7 @@ object ShakeConfig {
 
     @JvmStatic
     @Volatile
-    var comboEnabled: Boolean = true
-
-    @JvmStatic
-    @Volatile
-    var projectileCooldownEnabled: Boolean = true
-
-    @JvmStatic
-    @Volatile
-    var dynamicCrosshairEnabled: Boolean = true
-
-    @JvmStatic
-    @Volatile
     var distanceDisplayEnabled: Boolean = true
-
-    @JvmStatic
-    @Volatile
-    var attackCooldownEnabled: Boolean = true
 
     @JvmStatic
     @Volatile
@@ -138,29 +118,14 @@ object ShakeConfig {
             if (root.has("potionTimeEnabled")) {
                 potionTimeEnabled = root.get("potionTimeEnabled").asBoolean
             }
-            if (root.has("potionBorderEnabled")) {
-                potionBorderEnabled = root.get("potionBorderEnabled").asBoolean
-            }
             if (root.has("damageDisplayEnabled")) {
                 damageDisplayEnabled = root.get("damageDisplayEnabled").asBoolean
             }
             if (root.has("damageFloatEnabled")) {
                 damageFloatEnabled = root.get("damageFloatEnabled").asBoolean
             }
-            if (root.has("comboEnabled")) {
-                comboEnabled = root.get("comboEnabled").asBoolean
-            }
-            if (root.has("projectileCooldownEnabled")) {
-                projectileCooldownEnabled = root.get("projectileCooldownEnabled").asBoolean
-            }
-            if (root.has("dynamicCrosshairEnabled")) {
-                dynamicCrosshairEnabled = root.get("dynamicCrosshairEnabled").asBoolean
-            }
             if (root.has("distanceDisplayEnabled")) {
                 distanceDisplayEnabled = root.get("distanceDisplayEnabled").asBoolean
-            }
-            if (root.has("attackCooldownEnabled")) {
-                attackCooldownEnabled = root.get("attackCooldownEnabled").asBoolean
             }
             if (root.has("explosionCreditEnabled")) {
                 explosionCreditEnabled = root.get("explosionCreditEnabled").asBoolean
@@ -192,14 +157,9 @@ object ShakeConfig {
             root.addProperty("nauseaEnabled", nauseaEnabled)
             root.addProperty("potionFovEnabled", potionFovEnabled)
             root.addProperty("potionTimeEnabled", potionTimeEnabled)
-            root.addProperty("potionBorderEnabled", potionBorderEnabled)
             root.addProperty("damageDisplayEnabled", damageDisplayEnabled)
             root.addProperty("damageFloatEnabled", damageFloatEnabled)
-            root.addProperty("comboEnabled", comboEnabled)
-            root.addProperty("projectileCooldownEnabled", projectileCooldownEnabled)
-            root.addProperty("dynamicCrosshairEnabled", dynamicCrosshairEnabled)
             root.addProperty("distanceDisplayEnabled", distanceDisplayEnabled)
-            root.addProperty("attackCooldownEnabled", attackCooldownEnabled)
             root.addProperty("explosionCreditEnabled", explosionCreditEnabled)
             root.addProperty("particlePercentage", particlePercentage)
             root.addProperty("fovEffect", fovEffect)

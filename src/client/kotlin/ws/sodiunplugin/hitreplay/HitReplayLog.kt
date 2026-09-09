@@ -15,7 +15,7 @@ import java.util.*
 object HitReplayLog {
 
 
-    private const val DEBUG = true
+    private const val DEBUG = false
     private fun dbg(msg: String) {
         if (DEBUG) println("[HitReplay] $msg")
     }
@@ -25,6 +25,10 @@ object HitReplayLog {
         @JvmField val time: Long,
         @JvmField val amount: Float,
         @JvmField val source: String,
+        @JvmField val weaponName: String?,
+        @JvmField val damageType: String,
+        @JvmField val distance: Float,
+        @JvmField val critical: Boolean,
         @JvmField val death: Boolean,
         @JvmField val deathMessage: String?,
     )
@@ -36,7 +40,11 @@ object HitReplayLog {
     private var eventActive = false
     private var eventHealthLoss = 0f
     private var eventAbsorptionLoss = 0f
-    private var eventSource = "环境伤害"
+    private var eventSource = ""
+    private var eventWeapon: String? = null
+    private var eventDamageType = ""
+    private var eventDistance = 0f
+    private var eventCritical = false
     private var eventStartTime = 0L
     private var eventLastUpdate = 0L
     private var eventDeathMessage: String? = null
@@ -46,15 +54,25 @@ object HitReplayLog {
 
 
     @JvmStatic
-    fun beginEvent(source: String, time: Long) {
+    fun beginEvent(source: String, time: Long, weaponName: String?, damageType: String, distance: Float, critical: Boolean) {
         if (!HitReplayConfig.recordEnabled) {
             dbg("beginEvent 被跳过：recordEnabled=false")
             return
         }
         synchronized(lock) {
             if (eventActive) finalizeEventLocked()
-            beginEventLocked(source, time)
-            dbg("beginEvent: source=$source, eventActive=$eventActive")
+            eventSource = source
+            eventWeapon = weaponName
+            eventDamageType = damageType
+            eventDistance = distance
+            eventCritical = critical
+            eventHealthLoss = 0f
+            eventAbsorptionLoss = 0f
+            eventStartTime = time
+            eventLastUpdate = time
+            eventDeathMessage = null
+            eventActive = true
+            dbg("beginEvent: source=$source, weapon=$weaponName, type=$damageType, dist=$distance, crit=$critical")
         }
     }
 
@@ -65,10 +83,13 @@ object HitReplayLog {
             return
         }
         synchronized(lock) {
-            if (!eventActive) beginEventLocked("环境伤害", System.currentTimeMillis())
+            if (!eventActive) {
+                dbg("addHealthLoss 被跳过：eventActive=false（非 PvP 受击，不记录）")
+                return
+            }
             eventHealthLoss += amount
             eventLastUpdate = System.currentTimeMillis()
-            dbg("addHealthLoss: +$amount, 累计主血=$eventHealthLoss, 吸收=$eventAbsorptionLoss, eventActive=$eventActive")
+            dbg("addHealthLoss: +$amount, 累计主血=$eventHealthLoss, 吸收=$eventAbsorptionLoss")
         }
     }
 
@@ -77,7 +98,7 @@ object HitReplayLog {
         if (amount <= 0f || !HitReplayConfig.recordEnabled) return
         synchronized(lock) {
             if (!eventActive) {
-                dbg("addAbsorptionLoss 被跳过：eventActive=false（无进行中的受击事件）")
+                dbg("addAbsorptionLoss 被跳过：eventActive=false（无进行中的 PvP 受击事件）")
                 return
             }
             eventAbsorptionLoss += amount
@@ -96,21 +117,8 @@ object HitReplayLog {
             if (eventActive) {
                 eventDeathMessage = message
                 finalizeEventLocked()
-            } else {
-                addRecordLocked(HitRecord(System.currentTimeMillis(), 0f, "死亡", true, message))
-                dbg("recordDeath（独立死亡记录）：msg=$message")
             }
         }
-    }
-
-    private fun beginEventLocked(source: String, time: Long) {
-        eventActive = true
-        eventHealthLoss = 0f
-        eventAbsorptionLoss = 0f
-        eventSource = source
-        eventStartTime = time
-        eventLastUpdate = time
-        eventDeathMessage = null
     }
 
     private fun finalizeEventLocked() {
@@ -123,6 +131,10 @@ object HitReplayLog {
                     eventStartTime,
                     total,
                     eventSource,
+                    eventWeapon,
+                    eventDamageType,
+                    eventDistance,
+                    eventCritical,
                     eventDeathMessage != null,
                     eventDeathMessage,
                 )
@@ -133,6 +145,10 @@ object HitReplayLog {
         eventHealthLoss = 0f
         eventAbsorptionLoss = 0f
         eventDeathMessage = null
+        eventWeapon = null
+        eventDamageType = ""
+        eventDistance = 0f
+        eventCritical = false
     }
 
     private fun addRecordLocked(record: HitRecord) {
@@ -185,10 +201,16 @@ object HitReplayLog {
                 for (el in arr) {
                     if (!el.isJsonObject) continue
                     val o = el.asJsonObject
+                    val source = if (o.has("source")) o.get("source").asString else "未知"
+                    if (source == "环境伤害") continue
                     val rec = HitRecord(
                         if (o.has("time")) o.get("time").asLong else 0L,
                         if (o.has("amount")) o.get("amount").asFloat else 0f,
-                        if (o.has("source")) o.get("source").asString else "未知",
+                        source,
+                        if (o.has("weaponName") && !o.get("weaponName").isJsonNull) o.get("weaponName").asString else null,
+                        if (o.has("damageType")) o.get("damageType").asString else "",
+                        if (o.has("distance")) o.get("distance").asFloat else 0f,
+                        o.has("critical") && o.get("critical").asBoolean,
                         o.has("death") && o.get("death").asBoolean,
                         if (o.has("deathMessage") && !o.get("deathMessage").isJsonNull) o.get("deathMessage").asString else null,
                     )
@@ -212,12 +234,12 @@ object HitReplayLog {
                     o.addProperty("time", r.time)
                     o.addProperty("amount", r.amount)
                     o.addProperty("source", r.source)
+                    if (r.weaponName != null) o.addProperty("weaponName", r.weaponName) else o.add("weaponName", JsonNull.INSTANCE)
+                    o.addProperty("damageType", r.damageType)
+                    o.addProperty("distance", r.distance)
+                    o.addProperty("critical", r.critical)
                     o.addProperty("death", r.death)
-                    if (r.deathMessage != null) {
-                        o.addProperty("deathMessage", r.deathMessage)
-                    } else {
-                        o.add("deathMessage", JsonNull.INSTANCE)
-                    }
+                    if (r.deathMessage != null) o.addProperty("deathMessage", r.deathMessage) else o.add("deathMessage", JsonNull.INSTANCE)
                     arr.add(o)
                 }
             }

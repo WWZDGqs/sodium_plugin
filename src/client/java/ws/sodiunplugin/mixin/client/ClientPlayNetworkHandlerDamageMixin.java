@@ -6,6 +6,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.EntityDamageS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,11 +36,78 @@ public class ClientPlayNetworkHandlerDamageMixin {
         int sourceCauseId = packet.sourceCauseId();
         int playerId = client.player.getId();
 
+        if (targetId != playerId) {
+            handleTargetDamage(client, packet, targetId, sourceDirectId, sourceCauseId, playerId);
+            return;
+        }
+
+        if (!HitReplayConfig.getRecordEnabled()) {
+            return;
+        }
+
+        ClientWorld world = client.world;
+        Entity attacker = resolveEntity(world, sourceDirectId, sourceCauseId);
+        if (!(attacker instanceof PlayerEntity) || attacker.getId() == playerId) {
+            return;
+        }
+
+        String weaponName = null;
+        String damageType = "";
+        String sourceTypeMsgId = "";
+        try {
+            DamageSource source = packet.createDamageSource(world);
+            if (source != null) {
+                var weaponStack = source.getWeaponStack();
+                if (weaponStack != null && !weaponStack.isEmpty()) {
+                    weaponName = weaponStack.getName().getString();
+                }
+                damageType = source.getName();
+            }
+        } catch (Throwable ignored) {
+        }
+        try {
+            sourceTypeMsgId = packet.sourceType().value().msgId();
+            if (!sourceTypeMsgId.isEmpty()) {
+                damageType = sourceTypeMsgId;
+            }
+        } catch (Throwable ignored) {
+        }
+
+        float distance = 0f;
+        try {
+            distance = (float) attacker.getEntityPos().distanceTo(client.player.getEntityPos());
+        } catch (Throwable ignored) {
+        }
+
+        boolean critical = false;
+        for (String name : new String[]{"isCritical", "getCritical", "critical"}) {
+            try {
+                var m = packet.getClass().getMethod(name);
+                critical = (boolean) m.invoke(packet);
+                break;
+            } catch (Throwable ignored) {
+            }
+        }
+
+        String attackerName = attacker.getName().getString();
+        HitReplayLog.beginEvent(attackerName, System.currentTimeMillis(), weaponName, damageType, distance, critical);
+    }
+
+    private void handleTargetDamage(MinecraftClient client, EntityDamageS2CPacket packet, int targetId, int sourceDirectId, int sourceCauseId, int playerId) {
+        if (!ShakeConfig.getDamageDisplayEnabled() && !ShakeConfig.getDamageFloatEnabled()) {
+            return;
+        }
+        ClientWorld world = client.world;
+        Entity target = world.getEntityById(targetId);
+        if (!(target instanceof LivingEntity livingTarget)) {
+            return;
+        }
+
         String weaponName = null;
         String damageTypeName = "";
         String sourceTypeMsgId = "";
         try {
-            DamageSource source = packet.createDamageSource(client.world);
+            DamageSource source = packet.createDamageSource(world);
             if (source != null) {
                 var weaponStack = source.getWeaponStack();
                 if (weaponStack != null && !weaponStack.isEmpty()) {
@@ -60,27 +128,6 @@ public class ClientPlayNetworkHandlerDamageMixin {
                 || sourceTypeMsgId.equals("player_explosion")
                 || sourceTypeMsgId.equals("badRespawnPoint");
 
-        if (targetId == playerId) {
-            if (HitReplayConfig.getRecordEnabled()) {
-                String sourceName = resolvePlayerDamageSource(client.world, sourceDirectId, sourceCauseId, isExplosion, weaponName);
-                System.out.println("[HitReplay] 收到本地玩家受伤包：source=" + sourceName + " type=" + sourceTypeMsgId);
-                HitReplayLog.beginEvent(sourceName, System.currentTimeMillis());
-            } else {
-                System.out.println("[HitReplay] 收到本地玩家受伤包，但 recordEnabled=false 未记录");
-            }
-            return;
-        }
-
-        if (!ShakeConfig.getDamageDisplayEnabled() && !ShakeConfig.getDamageFloatEnabled() && !ShakeConfig.getComboEnabled()) {
-            return;
-        }
-
-        ClientWorld world = client.world;
-        Entity target = world.getEntityById(targetId);
-        if (!(target instanceof LivingEntity livingTarget)) {
-            return;
-        }
-
         boolean byMe = (sourceDirectId == playerId || sourceCauseId == playerId);
         boolean byExplosion = ShakeConfig.getExplosionCreditEnabled() && isExplosion;
         if (!byMe && !byExplosion) {
@@ -92,26 +139,15 @@ public class ClientPlayNetworkHandlerDamageMixin {
         DamageDisplayStore.markPending(targetId, finalWeaponName, damageTypeName, livingTarget.getHealth(), livingTarget.getAbsorptionAmount(), isAttack);
     }
 
-    private static String resolvePlayerDamageSource(ClientWorld world, int directId, int causeId, boolean isExplosion, String weaponName) {
-        if (isExplosion) {
-            return "爆炸";
-        }
-        Entity attacker = null;
+    private static Entity resolveEntity(ClientWorld world, int directId, int causeId) {
         if (directId != 0) {
-            attacker = world.getEntityById(directId);
+            Entity e = world.getEntityById(directId);
+            if (e != null) return e;
         }
-        if (attacker == null && causeId != 0) {
-            attacker = world.getEntityById(causeId);
+        if (causeId != 0) {
+            Entity e = world.getEntityById(causeId);
+            if (e != null) return e;
         }
-        if (attacker != null) {
-            String name = attacker.getName().getString();
-            if (name != null && !name.isEmpty()) {
-                return name;
-            }
-        }
-        if (weaponName != null && !weaponName.isEmpty()) {
-            return weaponName;
-        }
-        return "环境伤害";
+        return null;
     }
 }

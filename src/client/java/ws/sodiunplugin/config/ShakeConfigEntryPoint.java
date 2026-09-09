@@ -10,7 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import ws.sodiunplugin.feature.ChestEspConfig;
+import ws.sodiunplugin.feature.AutoScreenshotConfig;
 import ws.sodiunplugin.feature.HighlightColor;
 import ws.sodiunplugin.feature.PlayerHighlightConfig;
 import ws.sodiunplugin.hitreplay.HitReplayConfig;
@@ -25,12 +25,14 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
         ShakeConfig.save();
         HitReplayConfig.save();
         PlayerHighlightConfig.save();
-        ChestEspConfig.save();
+        AutoScreenshotConfig.save();
     };
 
     private static final ControlValueFormatter PERCENT_FORMATTER = value -> Text.literal(value + "%");
 
     private static final ControlValueFormatter PLAIN_FORMATTER = value -> Text.literal(String.valueOf(value));
+
+    public static volatile boolean DANGER_ARMED = false;
 
     @Override
     public void registerConfigEarly(ConfigBuilder builder) {
@@ -215,16 +217,6 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
                                                                 ShakeConfig::getPotionTimeEnabled)
                                         )
                                         .addOption(
-                                                builder.createBooleanOption(Identifier.of(MOD_ID, "potion_border"))
-                                                        .setName(Text.translatable("sodium_plugin.option.potion_border"))
-                                                        .setTooltip(Text.translatable("sodium_plugin.option.potion_border.tooltip"))
-                                                        .setStorageHandler(STORAGE)
-                                                        .setDefaultValue(true)
-                                                        .setBinding(
-                                                                value -> ShakeConfig.setPotionBorderEnabled(value),
-                                                                ShakeConfig::getPotionBorderEnabled)
-                                        )
-                                        .addOption(
                                                 builder.createBooleanOption(Identifier.of(MOD_ID, "damage_display"))
                                                         .setName(Text.translatable("sodium_plugin.option.damage_display"))
                                                         .setTooltip(Text.translatable("sodium_plugin.option.damage_display.tooltip"))
@@ -254,40 +246,10 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
                                                                 value -> ShakeConfig.setDamageFloatEnabled(value),
                                                                 ShakeConfig::getDamageFloatEnabled)
                                         )
-                                        .addOption(
-                                                builder.createBooleanOption(Identifier.of(MOD_ID, "combo"))
-                                                        .setName(Text.translatable("sodium_plugin.option.combo"))
-                                                        .setTooltip(Text.translatable("sodium_plugin.option.combo.tooltip"))
-                                                        .setStorageHandler(STORAGE)
-                                                        .setDefaultValue(true)
-                                                        .setBinding(
-                                                                value -> ShakeConfig.setComboEnabled(value),
-                                                                ShakeConfig::getComboEnabled)
-                                        )
-                                        .addOption(
-                                                builder.createBooleanOption(Identifier.of(MOD_ID, "projectile_cooldown"))
-                                                        .setName(Text.translatable("sodium_plugin.option.projectile_cooldown"))
-                                                        .setTooltip(Text.translatable("sodium_plugin.option.projectile_cooldown.tooltip"))
-                                                        .setStorageHandler(STORAGE)
-                                                        .setDefaultValue(true)
-                                                        .setBinding(
-                                                                value -> ShakeConfig.setProjectileCooldownEnabled(value),
-                                                                ShakeConfig::getProjectileCooldownEnabled)
-                                        )
                         )
                         .addOptionGroup(
                                 builder.createOptionGroup()
                                         .setName(Text.translatable("sodium_plugin.group.combat"))
-                                        .addOption(
-                                                builder.createBooleanOption(Identifier.of(MOD_ID, "dynamic_crosshair"))
-                                                        .setName(Text.translatable("sodium_plugin.option.dynamic_crosshair"))
-                                                        .setTooltip(Text.translatable("sodium_plugin.option.dynamic_crosshair.tooltip"))
-                                                        .setStorageHandler(STORAGE)
-                                                        .setDefaultValue(true)
-                                                        .setBinding(
-                                                                value -> ShakeConfig.setDynamicCrosshairEnabled(value),
-                                                                ShakeConfig::getDynamicCrosshairEnabled)
-                                        )
                                         .addOption(
                                                 builder.createBooleanOption(Identifier.of(MOD_ID, "distance_display"))
                                                         .setName(Text.translatable("sodium_plugin.option.distance_display"))
@@ -297,81 +259,6 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
                                                         .setBinding(
                                                                 value -> ShakeConfig.setDistanceDisplayEnabled(value),
                                                                 ShakeConfig::getDistanceDisplayEnabled)
-                                        )
-                                        .addOption(
-                                                builder.createBooleanOption(Identifier.of(MOD_ID, "attack_cooldown"))
-                                                        .setName(Text.translatable("sodium_plugin.option.attack_cooldown"))
-                                                        .setTooltip(Text.translatable("sodium_plugin.option.attack_cooldown.tooltip"))
-                                                        .setStorageHandler(STORAGE)
-                                                        .setDefaultValue(true)
-                                                        .setBinding(
-                                                                value -> ShakeConfig.setAttackCooldownEnabled(value),
-                                                                ShakeConfig::getAttackCooldownEnabled)
-                                        )
-                        )
-        );
-
-        modOptions.addPage(
-                builder.createOptionPage()
-                        .setName(Text.translatable("sodium_plugin.page.chestesp.title"))
-                        .addOptionGroup(
-                                builder.createOptionGroup()
-                                        .setName(Text.translatable("sodium_plugin.group.chestesp"))
-                                        .addOption(
-                                                builder.createBooleanOption(Identifier.of(MOD_ID, "chest_esp_enabled"))
-                                                        .setName(Text.translatable("sodium_plugin.option.chest_esp_enabled"))
-                                                        .setTooltip(Text.translatable("sodium_plugin.option.chest_esp_enabled.tooltip"))
-                                                        .setStorageHandler(STORAGE)
-                                                        .setDefaultValue(false)
-                                                        .setBinding(
-                                                                value -> ChestEspConfig.setEnabled(value),
-                                                                ChestEspConfig::getEnabled)
-                                        )
-                                        .addOption(
-                                                builder.createIntegerOption(Identifier.of(MOD_ID, "chest_esp_range"))
-                                                        .setName(Text.translatable("sodium_plugin.option.chest_esp_range"))
-                                                        .setTooltip(Text.translatable("sodium_plugin.option.chest_esp_range.tooltip"))
-                                                        .setStorageHandler(STORAGE)
-                                                        .setRange(8, 128, 1)
-                                                        .setDefaultValue(32)
-                                                        .setValueFormatter(PLAIN_FORMATTER)
-                                                        .setBinding(
-                                                                value -> ChestEspConfig.setRange(value),
-                                                                ChestEspConfig::getRange)
-                                        )
-                        )
-                        .addOptionGroup(
-                                builder.createOptionGroup()
-                                        .setName(Text.translatable("sodium_plugin.group.chestesp.types"))
-                                        .addOption(
-                                                builder.createBooleanOption(Identifier.of(MOD_ID, "chest_esp_chest"))
-                                                        .setName(Text.translatable("sodium_plugin.option.chest_esp_chest"))
-                                                        .setTooltip(Text.translatable("sodium_plugin.option.chest_esp_chest.tooltip"))
-                                                        .setStorageHandler(STORAGE)
-                                                        .setDefaultValue(true)
-                                                        .setBinding(
-                                                                value -> ChestEspConfig.setShowChest(value),
-                                                                ChestEspConfig::getShowChest)
-                                        )
-                                        .addOption(
-                                                builder.createBooleanOption(Identifier.of(MOD_ID, "chest_esp_shulker"))
-                                                        .setName(Text.translatable("sodium_plugin.option.chest_esp_shulker"))
-                                                        .setTooltip(Text.translatable("sodium_plugin.option.chest_esp_shulker.tooltip"))
-                                                        .setStorageHandler(STORAGE)
-                                                        .setDefaultValue(true)
-                                                        .setBinding(
-                                                                value -> ChestEspConfig.setShowShulkerBox(value),
-                                                                ChestEspConfig::getShowShulkerBox)
-                                        )
-                                        .addOption(
-                                                builder.createBooleanOption(Identifier.of(MOD_ID, "chest_esp_ender"))
-                                                        .setName(Text.translatable("sodium_plugin.option.chest_esp_ender"))
-                                                        .setTooltip(Text.translatable("sodium_plugin.option.chest_esp_ender.tooltip"))
-                                                        .setStorageHandler(STORAGE)
-                                                        .setDefaultValue(true)
-                                                        .setBinding(
-                                                                value -> ChestEspConfig.setShowEnderChest(value),
-                                                                ChestEspConfig::getShowEnderChest)
                                         )
                         )
         );
@@ -412,6 +299,62 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
                                         )
                         )
         );
+
+        modOptions.addPage(
+                builder.createOptionPage()
+                        .setName(Text.translatable("sodium_plugin.page.autoscreenshot.title"))
+                        .addOptionGroup(
+                                builder.createOptionGroup()
+                                        .setName(Text.translatable("sodium_plugin.group.autoscreenshot"))
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "auto_screenshot_enabled"))
+                                                        .setName(Text.translatable("sodium_plugin.option.auto_screenshot_enabled"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.auto_screenshot_enabled.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(false)
+                                                        .setBinding(
+                                                                value -> AutoScreenshotConfig.setEnabled(value),
+                                                                AutoScreenshotConfig::getEnabled)
+                                        )
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "auto_screenshot_kill"))
+                                                        .setName(Text.translatable("sodium_plugin.option.auto_screenshot_kill"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.auto_screenshot_kill.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(true)
+                                                        .setBinding(
+                                                                value -> AutoScreenshotConfig.setKillEnabled(value),
+                                                                AutoScreenshotConfig::getKillEnabled)
+                                        )
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "auto_screenshot_death"))
+                                                        .setName(Text.translatable("sodium_plugin.option.auto_screenshot_death"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.auto_screenshot_death.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(true)
+                                                        .setBinding(
+                                                                value -> AutoScreenshotConfig.setDeathEnabled(value),
+                                                                AutoScreenshotConfig::getDeathEnabled)
+                                        )
+                        )
+        );
+
+        modOptions.addPage(
+                builder.createOptionPage()
+                        .setName(Text.translatable("sodium_plugin.page.danger.title"))
+                        .addOptionGroup(
+                                builder.createOptionGroup()
+                                        .setName(Text.translatable("sodium_plugin.group.danger"))
+                                        .addOption(
+                                                builder.createExternalButtonOption(Identifier.of(MOD_ID, "danger_button"))
+                                                        .setName(Text.translatable("sodium_plugin.option.danger_button"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.danger_button.tooltip"))
+                                                        .setScreenConsumer(currentScreen -> {
+                                                            DANGER_ARMED = true;
+                                                            throw new RuntimeException("你点击了『千万别点』按钮，游戏已崩溃。");
+                                                        })
+                                        )
+                        )
+        );
     }
 }
-//怎么全是bug啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊

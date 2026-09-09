@@ -16,19 +16,18 @@ public class ReplayLogScreen extends Screen {
     private int scroll = 0;
     private int lastLoggedCount = -1;
 
-    private static final int LINE_HEIGHT = 36;
+    private static final int LINE_HEIGHT = 58;
     private static final int TOP = 44;
     private static final int BOTTOM_MARGIN = 44;
 
     public ReplayLogScreen(Screen parent) {
-        super(Text.literal("受击回放记录"));
+        super(Text.literal("PvP 受击记录"));
         this.parent = parent;
     }
 
     @Override
     protected void init() {
         records = HitReplayLog.getRecords();
-        System.out.println("[HitReplay] 打开记录页：recordEnabled=" + HitReplayConfig.getRecordEnabled() + " 记录数=" + records.size());
         scroll = 0;
         lastLoggedCount = -1;
 
@@ -38,7 +37,6 @@ public class ReplayLogScreen extends Screen {
 
         this.addDrawableChild(ButtonWidget.builder(Text.literal("清空记录"), b -> {
             HitReplayLog.clear();
-            System.out.println("[HitReplay] 已点击清空记录，当前记录数=0");
             records = HitReplayLog.getRecords();
         }).dimensions(this.width / 2 + 2, this.height - 28, 98, 20).build());
     }
@@ -68,15 +66,6 @@ public class ReplayLogScreen extends Screen {
 
         if (records.size() != lastLoggedCount) {
             lastLoggedCount = records.size();
-            StringBuilder sb = new StringBuilder();
-            sb.append("[HitReplay] render 绘制记录数=").append(records.size());
-            for (int i = 0; i < Math.min(3, records.size()); i++) {
-                HitRecord r = records.get(i);
-                sb.append(" | #").append(i).append(" ").append(HitReplayLog.formatTime(r.time))
-                        .append(" dmg=").append(String.format("%.1f", r.amount))
-                        .append(" src=").append(r.source);
-            }
-            System.out.println(sb);
         }
 
         int viewHeight = this.height - TOP - BOTTOM_MARGIN;
@@ -90,21 +79,26 @@ public class ReplayLogScreen extends Screen {
                 continue;
             }
             String time = HitReplayLog.formatTime(r.time);
-            String head = "[" + time + "] " + (r.death ? "☠ " : "") + "受到 " + String.format("%.1f", r.amount) + " 点伤害";
+            String critTag = r.critical ? "（暴击）" : "";
+            String head = "[" + time + "] " + (r.death ? "☠ " : "") + "受到 " + String.format("%.1f", r.amount) + " 点伤害" + critTag;
             context.drawTextWithShadow(this.textRenderer, Text.literal(head), 24, y, r.death ? 0xFFFF8A8A : 0xFFFFFFFF);
             context.drawTextWithShadow(this.textRenderer, Text.literal("来源：" + r.source), 36, y + 12, 0xFFCFCFCF);
+            String detail = "武器：" + (r.weaponName != null ? r.weaponName : "徒手")
+                    + " · 类型：" + (r.damageType.isEmpty() ? "未知" : r.damageType)
+                    + " · 距离：" + String.format("%.1f", r.distance) + " m";
+            context.drawTextWithShadow(this.textRenderer, Text.literal(detail), 36, y + 24, 0xFFBFBFEF);
             if (r.deathMessage != null) {
-                context.drawTextWithShadow(this.textRenderer, Text.literal("死因：" + r.deathMessage), 36, y + 24, 0xFFFFB0B0);
+                context.drawTextWithShadow(this.textRenderer, Text.literal("死因：" + r.deathMessage), 36, y + 36, 0xFFFFB0B0);
             }
         }
 
         context.drawCenteredTextWithShadow(this.textRenderer,
-                Text.literal("滚轮滚动 · 共 " + records.size() + " 条"),
+                Text.literal("滚轮滚动 · 共 " + records.size() + " 条（仅记录被其他玩家攻击）"),
                 this.width / 2, this.height - 52, 0xFF999999);
 
         if (records.isEmpty()) {
             context.drawCenteredTextWithShadow(this.textRenderer,
-                    Text.literal("暂无受击记录（受伤后才会产生）"),
+                    Text.literal("暂无 PvP 受击记录（被其他玩家攻击后才会产生）"),
                     this.width / 2, this.height / 2, 0xFFAAAAAA);
         }
     }

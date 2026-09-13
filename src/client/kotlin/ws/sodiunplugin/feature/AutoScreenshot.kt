@@ -62,7 +62,6 @@ object AutoScreenshot {
                     dir,
                     "${prefix}_${System.currentTimeMillis()}.png",
                     client.framebuffer,
-                    1,
                     receiver
                 )
             } catch (e: Exception) {

@@ -75,7 +75,7 @@ public class ClientPlayNetworkHandlerDamageMixin {
 
         float distance = 0f;
         try {
-            distance = (float) attacker.getEntityPos().distanceTo(client.player.getEntityPos());
+            distance = (float) attacker.getPos().distanceTo(client.player.getPos());
         } catch (Throwable ignored) {
         }
 

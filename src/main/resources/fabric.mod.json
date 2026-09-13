@@ -44,11 +44,11 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.19.3",
-		"minecraft": "~1.21.11",
+		"minecraft": "~1.21.4",
 		"java": ">=21",
 		"fabric-api": "*",
 		"fabric-language-kotlin": "*",
-		"sodium": ">=0.8.12"
+		"sodium": ">=0.8.0"
 	},
 	"suggests": {
 		"another-mod": "*"

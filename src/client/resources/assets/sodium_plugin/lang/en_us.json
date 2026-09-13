@@ -69,5 +69,7 @@
 	"sodium_plugin.page.danger.title": "Auxiliary Features",
 	"sodium_plugin.group.danger": "Danger",
 	"sodium_plugin.option.danger_button": "DO NOT CLICK",
-	"sodium_plugin.option.danger_button.tooltip": "Clicking this will crash the game instantly. Stay away."
+	"sodium_plugin.option.danger_button.tooltip": "Clicking this will crash the game instantly. Stay away.",
+	"sodium_plugin.option.target_status_hud": "Target Status HUD",
+	"sodium_plugin.option.target_status_hud.tooltip": "Shows the aimed player's health, armor and active potion effects near the crosshair."
 }

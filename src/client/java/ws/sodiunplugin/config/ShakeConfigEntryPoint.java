@@ -260,6 +260,16 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
                                                                 value -> ShakeConfig.setDistanceDisplayEnabled(value),
                                                                 ShakeConfig::getDistanceDisplayEnabled)
                                         )
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "target_status_hud"))
+                                                        .setName(Text.translatable("sodium_plugin.option.target_status_hud"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.target_status_hud.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(true)
+                                                        .setBinding(
+                                                                value -> ShakeConfig.setTargetStatusHudEnabled(value),
+                                                                ShakeConfig::getTargetStatusHudEnabled)
+                                        )
                         )
         );
 

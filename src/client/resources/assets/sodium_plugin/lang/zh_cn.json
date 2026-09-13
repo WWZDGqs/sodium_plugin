@@ -69,5 +69,7 @@
 	"sodium_plugin.page.danger.title": "辅助功能",
 	"sodium_plugin.group.danger": "危险操作",
 	"sodium_plugin.option.danger_button": "千万别点",
-	"sodium_plugin.option.danger_button.tooltip": "点击后游戏会立即崩溃，请远离。"
+	"sodium_plugin.option.danger_button.tooltip": "点击后游戏会立即崩溃，请远离。",
+	"sodium_plugin.option.target_status_hud": "目标状态显示",
+	"sodium_plugin.option.target_status_hud.tooltip": "准星指向玩家时，在准星旁显示其血量、护甲与当前药水效果。"
 }

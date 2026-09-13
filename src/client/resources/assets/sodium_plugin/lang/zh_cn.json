@@ -32,8 +32,6 @@
 	"sodium_plugin.option.damage_float": "伤害飘字",
 	"sodium_plugin.option.damage_float.tooltip": "击中实体时，在屏幕中上方飘出该次造成的伤害数字（向上飘动并淡出）。",
 	"sodium_plugin.group.combat": "战斗信息",
-	"sodium_plugin.option.distance_display": "距离显示",
-	"sodium_plugin.option.distance_display.tooltip": "准星指向实体时，在准星右侧显示你与该实体的距离（格）。",
 	"sodium_plugin.page.hitreplay.title": "受击回放",
 	"sodium_plugin.group.hitreplay": "受击回放",
 	"sodium_plugin.option.hit_replay_enabled": "启用受击记录",
@@ -69,5 +67,7 @@
 	"sodium_plugin.page.danger.title": "辅助功能",
 	"sodium_plugin.group.danger": "危险操作",
 	"sodium_plugin.option.danger_button": "千万别点",
-	"sodium_plugin.option.danger_button.tooltip": "点击后游戏会立即崩溃，请远离。"
+	"sodium_plugin.option.danger_button.tooltip": "点击后游戏会立即崩溃，请远离。",
+	"sodium_plugin.option.target_status_hud": "目标状态显示",
+	"sodium_plugin.option.target_status_hud.tooltip": "准星指向玩家时，在准星旁显示其名字、距离、血量与护甲。"
 }

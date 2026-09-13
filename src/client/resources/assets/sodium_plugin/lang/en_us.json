@@ -32,8 +32,6 @@
 	"sodium_plugin.option.damage_float": "Floating Damage Text",
 	"sodium_plugin.option.damage_float.tooltip": "When you hit an entity, the damage dealt floats up from the upper-center of the screen (rises and fades out).",
 	"sodium_plugin.group.combat": "Combat Info",
-	"sodium_plugin.option.distance_display": "Distance Display",
-	"sodium_plugin.option.distance_display.tooltip": "Shows the distance (in blocks) to the aimed entity at the right of the crosshair.",
 	"sodium_plugin.page.hitreplay.title": "Hit Replay",
 	"sodium_plugin.group.hitreplay": "Hit Replay",
 	"sodium_plugin.option.hit_replay_enabled": "Enable Hit Logging",
@@ -69,5 +67,7 @@
 	"sodium_plugin.page.danger.title": "Auxiliary Features",
 	"sodium_plugin.group.danger": "Danger",
 	"sodium_plugin.option.danger_button": "DO NOT CLICK",
-	"sodium_plugin.option.danger_button.tooltip": "Clicking this will crash the game instantly. Stay away."
+	"sodium_plugin.option.danger_button.tooltip": "Clicking this will crash the game instantly. Stay away.",
+	"sodium_plugin.option.target_status_hud": "Target Status HUD",
+	"sodium_plugin.option.target_status_hud.tooltip": "Shows the aimed player's name, distance, health and armor near the crosshair."
 }

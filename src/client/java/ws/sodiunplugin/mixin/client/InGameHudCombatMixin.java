@@ -17,10 +17,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ws.sodiunplugin.combat.FloatingDamageTexts;
 import ws.sodiunplugin.config.ShakeConfig;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Mixin(InGameHud.class)
 public class InGameHudCombatMixin {
 
-    private static final double AIM_TOLERANCE = Math.toRadians(8.0);
+    private static final double AIM_RANGE = 64.0;
+    private static final double AIM_PADDING = 0.2;
+
+    private static final int LINE_H = 12;
+    private static final int PAD = 4;
+
+    private static final int COLOR_NAME = 0xFFFFFFFF;
+    private static final int COLOR_DISTANCE = 0xFF99CCFF;
+    private static final int COLOR_HEALTH = 0xFF66FF66;
+    private static final int COLOR_BOX = 0x55000000;
 
     @Inject(method = "renderStatusBars(Lnet/minecraft/client/gui/DrawContext;)V", at = @At("RETURN"))
     private void onRenderStatusBarsCombat(DrawContext context, CallbackInfo ci) {
@@ -29,7 +41,7 @@ public class InGameHudCombatMixin {
             return;
         }
         renderFloatingDamage(client, context);
-        renderDistanceDisplay(client, context);
+        renderTargetStatusHud(client, context);
     }
 
     private void renderFloatingDamage(MinecraftClient client, DrawContext context) {
@@ -59,8 +71,8 @@ public class InGameHudCombatMixin {
         }
     }
 
-    private void renderDistanceDisplay(MinecraftClient client, DrawContext context) {
-        if (!ShakeConfig.getDistanceDisplayEnabled()) {
+    private void renderTargetStatusHud(MinecraftClient client, DrawContext context) {
+        if (!ShakeConfig.getTargetStatusHudEnabled()) {
             return;
         }
         ClientPlayerEntity player = client.player;
@@ -68,16 +80,36 @@ public class InGameHudCombatMixin {
             return;
         }
         Entity target = findAimedPlayer(client, player);
-        if (target == null) {
+        if (!(target instanceof PlayerEntity other)) {
             return;
         }
-        int width = context.getScaledWindowWidth();
-        int height = context.getScaledWindowHeight();
-        float dist = player.distanceTo(target);
-        String text = String.format("%.1f", dist);
-        int x = width / 2 + 14;
-        int y = height / 2 - 4;
-        context.drawText(client.textRenderer, text, x, y, 0xFFFFFFFF, true);
+
+        List<String> lines = new ArrayList<>();
+        List<Integer> colors = new ArrayList<>();
+        lines.add(other.getName().getString());
+        colors.add(COLOR_NAME);
+        lines.add(String.format("距离 %.1f m", player.distanceTo(other)));
+        colors.add(COLOR_DISTANCE);
+        lines.add(String.format("HP %.1f/%.0f   护甲 %d",
+                other.getHealth() + other.getAbsorptionAmount(), other.getMaxHealth(), other.getArmor()));
+        colors.add(COLOR_HEALTH);
+
+        int contentW = 0;
+        for (String l : lines) {
+            contentW = Math.max(contentW, client.textRenderer.getWidth(l));
+        }
+
+        int x = context.getScaledWindowWidth() / 2 + 14;
+        int y = context.getScaledWindowHeight() / 2 + 6;
+        int boxW = contentW + PAD * 2;
+        int boxH = lines.size() * LINE_H + PAD * 2;
+        context.fill(x - PAD, y - PAD, x - PAD + boxW, y - PAD + boxH, COLOR_BOX);
+
+        int ty = y;
+        for (int i = 0; i < lines.size(); i++) {
+            context.drawText(client.textRenderer, lines.get(i), x, ty, colors.get(i), true);
+            ty += LINE_H;
+        }
     }
 
     private Entity findAimedPlayer(MinecraftClient client, ClientPlayerEntity player) {
@@ -92,26 +124,21 @@ public class InGameHudCombatMixin {
         if (world == null) {
             return null;
         }
-        Vec3d from = player.getEntityPos();
-        Vec3d look = player.getRotationVec(1.0F);
+        Vec3d from = player.getCameraPosVec(1.0F);
+        Vec3d to = from.add(player.getRotationVec(1.0F).multiply(AIM_RANGE));
         Entity best = null;
-        double bestDot = Math.cos(AIM_TOLERANCE);
+        double bestDist = Double.MAX_VALUE;
         for (PlayerEntity other : world.getPlayers()) {
-            if (other == player) {
+            if (other == player || other.isInvisible()) {
                 continue;
             }
-            if (other.isInvisible()) {
+            var intersection = other.getBoundingBox().expand(AIM_PADDING).raycast(from, to);
+            if (intersection.isEmpty()) {
                 continue;
             }
-            Vec3d aimPoint = other.getEntityPos().add(0.0, other.getHeight() * 0.5, 0.0);
-            Vec3d dir = aimPoint.subtract(from);
-            double len = dir.length();
-            if (len < 1.0E-6) {
-                continue;
-            }
-            double dot = look.dotProduct(dir.multiply(1.0 / len));
-            if (dot > bestDot) {
-                bestDot = dot;
+            double dist = intersection.get().squaredDistanceTo(from);
+            if (dist < bestDist) {
+                bestDist = dist;
                 best = other;
             }
         }

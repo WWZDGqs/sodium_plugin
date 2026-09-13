@@ -1,7 +1,7 @@
 plugins {
 	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
 	id 'maven-publish'
-	id "org.jetbrains.kotlin.jvm" version "2.4.10"
+	id "org.jetbrains.kotlin.jvm" version "2.3.0"
 }
 
 version = project.mod_version
@@ -109,6 +109,27 @@ java {
 
 	sourceCompatibility = JavaVersion.VERSION_21
 	targetCompatibility = JavaVersion.VERSION_21
+}
+
+tasks.register("validateLangJson") {
+	doLast {
+		def slurper = new groovy.json.JsonSlurper()
+		fileTree("src/client/resources/assets") {
+			include "**/lang/*.json"
+		}.each { f ->
+			try {
+				slurper.parseText(f.getText("UTF-8"))
+			} catch (Exception e) {
+				throw new GradleException("Invalid lang JSON: ${f.name} -> ${e.message}")
+			}
+		}
+	}
+}
+
+["processResources", "processClientResources"].each { taskName ->
+	tasks.matching { it.name == taskName }.configureEach {
+		dependsOn "validateLangJson"
+	}
 }
 
 jar {

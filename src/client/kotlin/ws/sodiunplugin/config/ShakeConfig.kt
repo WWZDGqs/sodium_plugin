@@ -47,7 +47,7 @@ object ShakeConfig {
 
     @JvmStatic
     @Volatile
-    var distanceDisplayEnabled: Boolean = true
+    var targetStatusHudEnabled: Boolean = true
 
     @JvmStatic
     @Volatile
@@ -124,8 +124,8 @@ object ShakeConfig {
             if (root.has("damageFloatEnabled")) {
                 damageFloatEnabled = root.get("damageFloatEnabled").asBoolean
             }
-            if (root.has("distanceDisplayEnabled")) {
-                distanceDisplayEnabled = root.get("distanceDisplayEnabled").asBoolean
+            if (root.has("targetStatusHudEnabled")) {
+                targetStatusHudEnabled = root.get("targetStatusHudEnabled").asBoolean
             }
             if (root.has("explosionCreditEnabled")) {
                 explosionCreditEnabled = root.get("explosionCreditEnabled").asBoolean
@@ -159,7 +159,7 @@ object ShakeConfig {
             root.addProperty("potionTimeEnabled", potionTimeEnabled)
             root.addProperty("damageDisplayEnabled", damageDisplayEnabled)
             root.addProperty("damageFloatEnabled", damageFloatEnabled)
-            root.addProperty("distanceDisplayEnabled", distanceDisplayEnabled)
+            root.addProperty("targetStatusHudEnabled", targetStatusHudEnabled)
             root.addProperty("explosionCreditEnabled", explosionCreditEnabled)
             root.addProperty("particlePercentage", particlePercentage)
             root.addProperty("fovEffect", fovEffect)

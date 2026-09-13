@@ -4,7 +4,7 @@ Sodium View Shake Control（sodium_plugin）  作者：WWZDGqs
 
 **版本**：1.0.4
 **适用游戏版本**：Minecraft 1.21.11（Fabric）
-**运行依赖**：Fabric Loader ≥ 0.19.3、Fabric API、Fabric Language Kotlin、Sodium ≥ 0.8.12
+**运行依赖**：Fabric Loader ≥ 0.19.3、Fabric API、Fabric Language Kotlin（Kotlin ≥ 2.3.0）、Sodium ≥ 0.8.0
 **可选依赖**：Mod Menu（用于从模组列表打开设置界面）
 
 ### 1. 视角晃动
@@ -34,7 +34,7 @@ Sodium View Shake Control（sodium_plugin）  作者：WWZDGqs
 ### 5. 命中回放
 - **启用受击记录**：记录被其他玩家攻击造成的伤害，含武器、伤害类型、距离与击杀归因
 - **最大记录条数**：保留记录的上限。
-- **查看 PvP 受击记录**：打开记录界面浏览被其他玩家攻击的伤害历史（含武器、距离、暴击、击杀）。
+- **查看 PvP 受击记录**：打开记录界面浏览被其他玩家攻击的伤害历史。
 
 ### 6. 自动截图
 - **启用自动截图**：开启后，在击杀或死亡瞬间自动保存截图到游戏 `screenshots` 目录。

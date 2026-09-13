@@ -47,11 +47,11 @@ public class ReplayLogScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         int contentHeight = records.size() * LINE_HEIGHT;
         int viewHeight = this.height - TOP - BOTTOM_MARGIN;
         int maxScroll = Math.max(0, contentHeight - viewHeight);
-        scroll = (int) Math.max(0, Math.min(maxScroll, scroll - verticalAmount * LINE_HEIGHT));
+        scroll = (int) Math.max(0, Math.min(maxScroll, scroll - amount * LINE_HEIGHT));
         return true;
     }
 

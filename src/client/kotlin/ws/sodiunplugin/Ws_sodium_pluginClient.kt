@@ -4,7 +4,6 @@ import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import ws.sodiunplugin.combat.FloatingDamageTexts
 import ws.sodiunplugin.config.ShakeConfig
-import ws.sodiunplugin.config.ShakeConfigEntryPoint
 import ws.sodiunplugin.feature.AutoScreenshot
 import ws.sodiunplugin.feature.AutoScreenshotConfig
 import ws.sodiunplugin.feature.PlayerHighlightConfig
@@ -28,10 +27,6 @@ object Ws_sodium_pluginClient : ClientModInitializer {
 			}
 			HitReplayLog.tickSettle()
 			AutoScreenshot.tick()
-			if (ShakeConfigEntryPoint.DANGER_ARMED) {
-				ShakeConfigEntryPoint.DANGER_ARMED = false
-				throw RuntimeException("你点击了『千万别点』按钮，游戏已崩溃。")
-			}
 		}
 	}
 }

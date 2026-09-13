@@ -12,10 +12,7 @@ import ws.sodiunplugin.config.ShakeConfig;
 @Mixin(LivingEntityRenderer.class)
 public class LivingEntityRendererMixin {
 
-    @Redirect(method = {
-            "updateRenderState(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/client/render/entity/state/LivingEntityRenderState;F)V",
-            "hasLabel(Lnet/minecraft/entity/LivingEntity;D)Z"
-    }, at = @At(value = "INVOKE",
+    @Redirect(method = "hasLabel(Lnet/minecraft/entity/LivingEntity;)Z", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/entity/LivingEntity;isInvisibleTo(Lnet/minecraft/entity/player/PlayerEntity;)Z"))
     private boolean revealInvisiblePlayers(LivingEntity entity, PlayerEntity viewer) {
         if (ShakeConfig.getShowInvisiblePlayers() && entity instanceof PlayerEntity) {

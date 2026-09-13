@@ -57,25 +57,28 @@ public class ClientPlayNetworkHandlerDamageMixin {
         try {
             DamageSource source = packet.createDamageSource(world);
             if (source != null) {
-                var weaponStack = source.getWeaponStack();
-                if (weaponStack != null && !weaponStack.isEmpty()) {
-                    weaponName = weaponStack.getName().getString();
+                Entity srcAttacker = source.getAttacker();
+                if (srcAttacker instanceof LivingEntity living) {
+                    var weaponStack = living.getMainHandStack();
+                    if (weaponStack != null && !weaponStack.isEmpty()) {
+                        weaponName = weaponStack.getName().getString();
+                    }
                 }
                 damageType = source.getName();
-            }
-        } catch (Throwable ignored) {
-        }
-        try {
-            sourceTypeMsgId = packet.sourceType().value().msgId();
-            if (!sourceTypeMsgId.isEmpty()) {
-                damageType = sourceTypeMsgId;
+                try {
+                    sourceTypeMsgId = source.getType().msgId();
+                    if (!sourceTypeMsgId.isEmpty()) {
+                        damageType = sourceTypeMsgId;
+                    }
+                } catch (Throwable ignored) {
+                }
             }
         } catch (Throwable ignored) {
         }
 
         float distance = 0f;
         try {
-            distance = (float) attacker.getEntityPos().distanceTo(client.player.getEntityPos());
+            distance = (float) attacker.getPos().distanceTo(client.player.getPos());
         } catch (Throwable ignored) {
         }
 
@@ -109,18 +112,21 @@ public class ClientPlayNetworkHandlerDamageMixin {
         try {
             DamageSource source = packet.createDamageSource(world);
             if (source != null) {
-                var weaponStack = source.getWeaponStack();
-                if (weaponStack != null && !weaponStack.isEmpty()) {
-                    weaponName = weaponStack.getName().getString();
+                Entity srcAttacker = source.getAttacker();
+                if (srcAttacker instanceof LivingEntity living) {
+                    var weaponStack = living.getMainHandStack();
+                    if (weaponStack != null && !weaponStack.isEmpty()) {
+                        weaponName = weaponStack.getName().getString();
+                    }
                 }
                 damageTypeName = source.getName();
-            }
-        } catch (Throwable ignored) {
-        }
-        try {
-            sourceTypeMsgId = packet.sourceType().value().msgId();
-            if (damageTypeName.isEmpty()) {
-                damageTypeName = sourceTypeMsgId;
+                try {
+                    sourceTypeMsgId = source.getType().msgId();
+                    if (damageTypeName.isEmpty()) {
+                        damageTypeName = sourceTypeMsgId;
+                    }
+                } catch (Throwable ignored) {
+                }
             }
         } catch (Throwable ignored) {
         }

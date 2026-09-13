@@ -3,7 +3,7 @@
 	"id": "sodium_plugin",
 	"version": "${version}",
 	"name": "Sodium View Shake Control",
-	"description": "在 Sodium 视频设置中新增一列「视角抖动控制」，可自由调节视角抖动强度（0%-100%），并分别开关疾跑抖动与受击抖动。",
+	"description": "视角抖动强度、受击/疾跑抖动、粒子、FOV、伽马、玩家高亮、伤害飘字、击杀回放等战斗 HUD 增强；设置界面由 Mod Menu 提供。",
 	"authors": [
 		"WWZDGqs"
 	],
@@ -28,9 +28,6 @@
 				"adapter": "kotlin"
 			}
 		],
-		"sodium:config_api_user": [
-			"ws.sodiunplugin.config.ShakeConfigEntryPoint"
-		],
 		"modmenu": [
 			"ws.sodiunplugin.config.ModMenuIntegration"
 		]
@@ -43,12 +40,15 @@
 		}
 	],
 	"depends": {
-		"fabricloader": ">=0.19.3",
-		"minecraft": "~1.21.11",
-		"java": ">=21",
+		"fabricloader": ">=0.14.21",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
 		"fabric-api": "*",
 		"fabric-language-kotlin": "*",
-		"sodium": ">=0.8.12"
+		"modmenu": ">=11.0.0"
+	},
+	"recommends": {
+		"sodium": ">=0.5.0"
 	},
 	"suggests": {
 		"another-mod": "*"

@@ -4,7 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,7 +27,7 @@ public class InGameHudPotionMixin {
 
     @Inject(method = "renderStatusEffectOverlay",
             at = @At("RETURN"))
-    private void onRenderStatusEffects(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+    private void onRenderStatusEffects(DrawContext context, CallbackInfo ci) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null) {
             return;
@@ -62,7 +61,7 @@ public class InGameHudPotionMixin {
 
             int x;
             int y;
-            if (se.getEffectType().value().isBeneficial()) {
+            if (se.getEffectType().isBeneficial()) {
                 beneficial++;
                 x = windowWidth - STEP * beneficial;
                 y = startY;

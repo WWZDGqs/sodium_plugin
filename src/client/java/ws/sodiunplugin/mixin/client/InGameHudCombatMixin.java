@@ -28,6 +28,8 @@ public class InGameHudCombatMixin {
 
     private static final int LINE_H = 12;
     private static final int PAD = 4;
+    private static final int X_OFFSET = 14;
+    private static final int Y_OFFSET = 6;
 
     private static final int COLOR_NAME = 0xFFFFFFFF;
     private static final int COLOR_DISTANCE = 0xFF99CCFF;
@@ -37,11 +39,15 @@ public class InGameHudCombatMixin {
     @Inject(method = "renderStatusBars(Lnet/minecraft/client/gui/DrawContext;)V", at = @At("RETURN"))
     private void onRenderStatusBarsCombat(DrawContext context, CallbackInfo ci) {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player == null || client.world == null) {
+        ClientPlayerEntity player = client.player;
+        if (player == null || client.world == null) {
             return;
         }
         renderFloatingDamage(client, context);
-        renderTargetStatusHud(client, context);
+        Entity target = findAimedPlayer(client, player);
+        if (target != null) {
+            renderTargetStatusHud(client, context, player, target);
+        }
     }
 
     private void renderFloatingDamage(MinecraftClient client, DrawContext context) {
@@ -71,15 +77,11 @@ public class InGameHudCombatMixin {
         }
     }
 
-    private void renderTargetStatusHud(MinecraftClient client, DrawContext context) {
+    private void renderTargetStatusHud(MinecraftClient client, DrawContext context,
+                                       ClientPlayerEntity player, Entity target) {
         if (!ShakeConfig.getTargetStatusHudEnabled()) {
             return;
         }
-        ClientPlayerEntity player = client.player;
-        if (player == null) {
-            return;
-        }
-        Entity target = findAimedPlayer(client, player);
         if (!(target instanceof PlayerEntity other)) {
             return;
         }
@@ -99,8 +101,8 @@ public class InGameHudCombatMixin {
             contentW = Math.max(contentW, client.textRenderer.getWidth(l));
         }
 
-        int x = context.getScaledWindowWidth() / 2 + 14;
-        int y = context.getScaledWindowHeight() / 2 + 6;
+        int x = context.getScaledWindowWidth() / 2 + X_OFFSET;
+        int y = context.getScaledWindowHeight() / 2 + Y_OFFSET;
         int boxW = contentW + PAD * 2;
         int boxH = lines.size() * LINE_H + PAD * 2;
         context.fill(x - PAD, y - PAD, x - PAD + boxW, y - PAD + boxH, COLOR_BOX);

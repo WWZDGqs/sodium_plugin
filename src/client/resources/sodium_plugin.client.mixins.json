@@ -14,7 +14,10 @@
 		"ClientPlayerDamageMixin",
 		"DeathScreenMixin",
 		"LightmapGammaMixin",
-		"PlayerHighlightMixin"
+		"PlayerHighlightMixin",
+		"CrashReportMixin",
+		"EnderChestCaptureMixin",
+		"InventoryScreenMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

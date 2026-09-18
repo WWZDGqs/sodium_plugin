@@ -7,10 +7,13 @@ import net.caffeinemc.mods.sodium.api.config.StorageEventHandler;
 import net.caffeinemc.mods.sodium.api.config.option.ControlValueFormatter;
 import net.caffeinemc.mods.sodium.api.config.structure.ConfigBuilder;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import ws.sodiunplugin.feature.AutoScreenshotConfig;
+import ws.sodiunplugin.feature.EnderChestConfig;
+import ws.sodiunplugin.feature.EnderChestSnapshotScreen;
 import ws.sodiunplugin.feature.HighlightColor;
 import ws.sodiunplugin.feature.PlayerHighlightConfig;
 import ws.sodiunplugin.hitreplay.HitReplayConfig;
@@ -26,6 +29,7 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
         HitReplayConfig.save();
         PlayerHighlightConfig.save();
         AutoScreenshotConfig.save();
+        EnderChestConfig.save();
     };
 
     private static final ControlValueFormatter PERCENT_FORMATTER = value -> Text.literal(value + "%");
@@ -341,6 +345,48 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
 
         modOptions.addPage(
                 builder.createOptionPage()
+                        .setName(Text.translatable("sodium_plugin.page.enderchest.title"))
+                        .addOptionGroup(
+                                builder.createOptionGroup()
+                                        .setName(Text.translatable("sodium_plugin.group.enderchest"))
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "ender_chest_enabled"))
+                                                        .setName(Text.translatable("sodium_plugin.option.ender_chest_enabled"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.ender_chest_enabled.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(true)
+                                                        .setBinding(
+                                                                value -> EnderChestConfig.setEnabled(value),
+                                                                EnderChestConfig::getEnabled)
+                                        )
+                                        .addOption(
+                                                builder.createBooleanOption(Identifier.of(MOD_ID, "ender_chest_button"))
+                                                        .setName(Text.translatable("sodium_plugin.option.ender_chest_button"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.ender_chest_button.tooltip"))
+                                                        .setStorageHandler(STORAGE)
+                                                        .setDefaultValue(true)
+                                                        .setBinding(
+                                                                value -> EnderChestConfig.setShowSnapshotButton(value),
+                                                                EnderChestConfig::getShowSnapshotButton)
+                                        )
+                                        .addOption(
+                                                builder.createExternalButtonOption(Identifier.of(MOD_ID, "ender_chest_view"))
+                                                        .setName(Text.translatable("sodium_plugin.option.ender_chest_view"))
+                                                        .setTooltip(Text.translatable("sodium_plugin.option.ender_chest_view.tooltip"))
+                                                        .setScreenConsumer(currentScreen -> {
+                                                            ClientPlayerEntity player = MinecraftClient.getInstance().player;
+                                                            if (player == null) {
+                                                                return;
+                                                            }
+                                                            MinecraftClient.getInstance().setScreen(
+                                                                    new EnderChestSnapshotScreen(currentScreen, player));
+                                                        })
+                                        )
+                        )
+        );
+
+        modOptions.addPage(
+                builder.createOptionPage()
                         .setName(Text.translatable("sodium_plugin.page.danger.title"))
                         .addOptionGroup(
                                 builder.createOptionGroup()
@@ -351,7 +397,7 @@ public class ShakeConfigEntryPoint implements ConfigEntryPoint {
                                                         .setTooltip(Text.translatable("sodium_plugin.option.danger_button.tooltip"))
                                                         .setScreenConsumer(currentScreen -> {
                                                             DANGER_ARMED = true;
-                                                            throw new RuntimeException("你点击了『千万别点』按钮，游戏已崩溃。");
+                                                            throw new RuntimeException("你为什么要那么做？");
                                                         })
                                         )
                         )

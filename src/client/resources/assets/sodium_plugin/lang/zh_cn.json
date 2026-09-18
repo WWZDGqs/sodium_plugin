@@ -69,5 +69,15 @@
 	"sodium_plugin.option.danger_button": "千万别点",
 	"sodium_plugin.option.danger_button.tooltip": "点击后游戏会立即崩溃，请远离。",
 	"sodium_plugin.option.target_status_hud": "目标状态显示",
-	"sodium_plugin.option.target_status_hud.tooltip": "准星指向玩家时，在准星旁显示其名字、距离、血量与护甲。"
+	"sodium_plugin.option.target_status_hud.tooltip": "准星指向玩家时，在准星旁显示其名字、距离、血量与护甲。",
+	"sodium_plugin.page.enderchest.title": "末影箱快照",
+	"sodium_plugin.group.enderchest": "末影箱快照",
+	"sodium_plugin.option.ender_chest_enabled": "启用末影箱快照",
+	"sodium_plugin.option.ender_chest_enabled.tooltip": "每当你打开末影箱，自动保存一份 27 格内容的照片到本地；之后可以随时查看最近一次快照。",
+	"sodium_plugin.option.ender_chest_button": "背包界面按钮",
+	"sodium_plugin.option.ender_chest_button.tooltip": "在背包界面显示末影箱查看按钮，点击即可打开最近一次快照。",
+	"sodium_plugin.option.ender_chest_view": "查看末影箱快照",
+	"sodium_plugin.option.ender_chest_view.tooltip": "打开末影箱快照界面，查看你最近一次打开末影箱时保存的内容（只读）。",
+	"sodium_plugin.button.ender_chest": "末影箱快照",
+	"sodium_plugin.screen.ender_chest.title": "末影箱快照"
 }

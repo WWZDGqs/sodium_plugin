@@ -69,5 +69,15 @@
 	"sodium_plugin.option.danger_button": "DO NOT CLICK",
 	"sodium_plugin.option.danger_button.tooltip": "Clicking this will crash the game instantly. Stay away.",
 	"sodium_plugin.option.target_status_hud": "Target Status HUD",
-	"sodium_plugin.option.target_status_hud.tooltip": "Shows the aimed player's name, distance, health and armor near the crosshair."
+	"sodium_plugin.option.target_status_hud.tooltip": "Shows the aimed player's name, distance, health and armor near the crosshair.",
+	"sodium_plugin.page.enderchest.title": "Ender Chest Snapshot",
+	"sodium_plugin.group.enderchest": "Ender Chest Snapshot",
+	"sodium_plugin.option.ender_chest_enabled": "Enable Ender Chest Snapshot",
+	"sodium_plugin.option.ender_chest_enabled.tooltip": "Whenever you open an ender chest, a picture of its 27 slots is saved locally; you can view the most recent snapshot at any time.",
+	"sodium_plugin.option.ender_chest_button": "Inventory Screen Button",
+	"sodium_plugin.option.ender_chest_button.tooltip": "Shows an ender chest viewer button on the inventory screen; click it to open the latest snapshot.",
+	"sodium_plugin.option.ender_chest_view": "View Ender Chest Snapshot",
+	"sodium_plugin.option.ender_chest_view.tooltip": "Opens the ender chest snapshot viewer showing the contents saved the last time you opened an ender chest (read-only).",
+	"sodium_plugin.button.ender_chest": "Ender Chest Snapshot",
+	"sodium_plugin.screen.ender_chest.title": "Ender Chest Snapshot"
 }

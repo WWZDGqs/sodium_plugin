@@ -1,6 +1,6 @@
-Sodium View Shake Control（sodium_plugin）  作者：WWZDGqs
+warzone_utils  作者：WWZDGqs
 
-在 Sodium 视频设置中新增了视角抖动控制与画面增强，可调节视角抖动强度、镜头特效、玩家高亮、HUD 信息与命中回放。功能通过 Sodium 设置页或 Mod Menu 配置。
+新增了视角抖动控制与画面增强，可调节视角抖动强度、镜头特效、玩家高亮、HUD 信息与命中回放。功能通过 Sodium 设置页或 Mod Menu 配置。
 
 **版本**：1.0.4
 **适用游戏版本**：Minecraft 1.21.11（Fabric）

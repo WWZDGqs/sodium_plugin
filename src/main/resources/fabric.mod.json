@@ -1,56 +1,53 @@
 {
 	"schemaVersion": 1,
-	"id": "sodium_plugin",
+	"id": "warzoneutils",
 	"version": "${version}",
-	"name": "Sodium View Shake Control",
-	"description": "在 Sodium 视频设置中新增一列「视角抖动控制」，可自由调节视角抖动强度（0%-100%），并分别开关疾跑抖动与受击抖动。",
+	"name": "Warzone Utils",
+	"description": "A client-side PvP information and camera effect mod for Minecraft 1.21.11 Fabric. It shows combat readouts on the HUD (damage you deal, floating damage numbers, aimed target name/health/armor/distance, potion duration), provides sliders for view bobbing and camera effects, keeps a local PvP hit log with its own viewer, saves screenshots on kill or death, and lets you view the last ender chest contents you opened. Every feature is opt-in and client-side; no gameplay data is sent anywhere.",
 	"authors": [
 		"WWZDGqs"
 	],
 	"contact": {
-		"homepage": "https://github.com/WWZDGqs/WWZDGqs",
-		"sources": "https://github.com/WWZDGqs/WWZDGqs",
-		"issues": "https://github.com/WWZDGqs/WWZDGqs/issues"
+		"homepage": "https://github.com/WWZDGqs/warzone_utils",
+		"sources": "https://github.com/WWZDGqs/warzone_utils",
+		"issues": "https://github.com/WWZDGqs/warzone_utils/issues"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/sodium_plugin/icon.png",
+	"icon": "assets/warzoneutils/icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"main": [
 			{
-				"value": "ws.sodiunplugin.Ws_sodium_plugin",
+				"value": "ws.warzoneutils.WarzoneUtils",
 				"adapter": "kotlin"
 			}
 		],
 		"client": [
 			{
-				"value": "ws.sodiunplugin.Ws_sodium_pluginClient",
+				"value": "ws.warzoneutils.WarzoneUtilsClient",
 				"adapter": "kotlin"
 			}
 		],
 		"sodium:config_api_user": [
-			"ws.sodiunplugin.config.ShakeConfigEntryPoint"
+			"ws.warzoneutils.config.ShakeConfigEntryPoint"
 		],
 		"modmenu": [
-			"ws.sodiunplugin.config.ModMenuIntegration"
+			"ws.warzoneutils.config.ModMenuIntegration"
 		]
 	},
 	"mixins": [
-		"sodium_plugin.mixins.json",
+		"warzoneutils.mixins.json",
 		{
-			"config": "sodium_plugin.client.mixins.json",
+			"config": "warzoneutils.client.mixins.json",
 			"environment": "client"
 		}
 	],
 	"depends": {
-		"fabricloader": ">=0.19.3",
+		"fabricloader": ">=0.15.0",
 		"minecraft": "~1.21.11",
 		"java": ">=21",
 		"fabric-api": "*",
 		"fabric-language-kotlin": "*",
 		"sodium": ">=0.8.0"
-	},
-	"suggests": {
-		"another-mod": "*"
 	}
 }

@@ -1,0 +1,24 @@
+{
+	"required": true,
+	"package": "ws.warzoneutils.mixin.client",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"GameRendererMixin",
+		"GameRendererEffectsMixin",
+		"ParticleManagerMixin",
+		"LivingEntityRendererMixin",
+		"InGameHudPotionMixin",
+		"InGameHudDamageMixin",
+		"InGameHudCombatMixin",
+		"ClientPlayNetworkHandlerDamageMixin",
+		"ClientPlayerDamageMixin",
+		"DeathScreenMixin",
+		"LightmapGammaMixin",
+		"CrashReportMixin",
+		"EnderChestCaptureMixin",
+		"EnderChestCloseMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

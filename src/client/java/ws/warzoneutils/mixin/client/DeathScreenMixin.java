@@ -1,0 +1,22 @@
+package ws.warzoneutils.mixin.client;
+
+import net.minecraft.client.gui.screen.DeathScreen;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.text.Text;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import ws.warzoneutils.hitreplay.HitReplayLog;
+
+@Mixin(DeathScreen.class)
+public class DeathScreenMixin {
+
+    @Inject(method = "<init>(Lnet/minecraft/text/Text;ZLnet/minecraft/client/network/ClientPlayerEntity;)V", at = @At("HEAD"))
+    private static void onInit(Text title, boolean isHardcore, ClientPlayerEntity clientPlayer, CallbackInfo ci) {
+        if (title != null) {
+            HitReplayLog.recordDeath(title.getString());
+        }
+    }
+}
